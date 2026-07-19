@@ -202,8 +202,22 @@
             margin-top: -5px;
         }
 
+
+        /* Remove sublinhado e bordas ao clicar */
+        * {
+            -webkit-tap-highlight-color: transparent !important;
+            outline: none !important;
+        }
+        a, button {
+            text-decoration: none !important;
+        }
+        a:focus, button:focus, a:active, button:active {
+            outline: none !important;
+            box-shadow: none !important;
+            text-decoration: none !important;
+        }
 </style>
-<!-- Update: 1784470637.159658 --><!-- Force Refresh 1784470711.9840748 --><!-- Update CD 1784470745.3839927 --><!-- Update Name 1784470840.1610258 --><!-- Premium Update 1784470946.3109953 --><!-- Electric Blue Update 1784471032.1042376 --><!-- White Tagline Update 1784471085.5434437 --></head>
+<!-- Update: 1784470637.159658 --><!-- Force Refresh 1784470711.9840748 --><!-- Update CD 1784470745.3839927 --><!-- Update Name 1784470840.1610258 --><!-- Premium Update 1784470946.3109953 --><!-- Electric Blue Update 1784471032.1042376 --><!-- White Tagline Update 1784471085.5434437 --><!-- No Highlight Update 1784471225.2024455 --></head>
 <body>
     <div id="overlay" onclick="closeAll()"></div>
     
