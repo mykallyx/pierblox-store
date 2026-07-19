@@ -160,16 +160,37 @@
             text-align: center; 
             background: radial-gradient(circle at center, rgba(0,31,63,0.05) 0%, transparent 70%);
         }
+        
         .hero h1 { 
-            font-size: clamp(4rem, 15vw, 7rem) !important; /* Dynamic & Massive */
+            font-size: clamp(4rem, 18vw, 8rem) !important; 
             font-weight: 950 !important; 
-            color: #001f3f !important; /* Deep Navy */
-            text-shadow: 2px 2px 0px rgba(255,255,255,0.1) !important; /* Subtle sharp edge */
+            background: linear-gradient(to bottom, #00d2ff 0%, #0072ff 50%, #00d2ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 2px rgba(0,210,255,0.5));
             text-transform: uppercase !important;
             margin-bottom: 0px !important;
-            letter-spacing: -4px !important; /* Tight luxury tracking */
+            letter-spacing: -4px !important;
             line-height: 0.9 !important;
+            position: relative;
         }
+        /* Creating a 'brilho dentro' effect by layering */
+        .hero h1::after {
+            content: 'PIERBLOX';
+            position: absolute;
+            left: 0; top: 0;
+            width: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.8) 50%, transparent 60%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            animation: shine 3s infinite;
+        }
+        @keyframes shine {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
         .hero p { 
             opacity: 0.8; 
             font-size: 1.1rem; 
@@ -180,7 +201,7 @@
             margin-top: -5px;
         }
 </style>
-<!-- Update: 1784470637.159658 --><!-- Force Refresh 1784470711.9840748 --><!-- Update CD 1784470745.3839927 --><!-- Update Name 1784470840.1610258 --><!-- Premium Update 1784470946.3109953 --></head>
+<!-- Update: 1784470637.159658 --><!-- Force Refresh 1784470711.9840748 --><!-- Update CD 1784470745.3839927 --><!-- Update Name 1784470840.1610258 --><!-- Premium Update 1784470946.3109953 --><!-- Electric Blue Update 1784471032.1042376 --></head>
 <body>
     <div id="overlay" onclick="closeAll()"></div>
     
