@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <!-- DEPLOY_ID: 1784472975 -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATUALIZADO 1784472975</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;950&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { 
+            --primary: #0088ff; 
+            --bg: #050505; 
+            --card-bg: rgba(255,255,255,0.02); 
+            --card-border: rgba(255,255,255,0.08); 
+            --text: #ffffff; 
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins', sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+        
+        header { 
+            padding: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: rgba(0,0,0,0.8); 
+            backdrop-filter: blur(15px); 
+            position: sticky; 
+            top:0; 
+            z-index: 100; 
+            border-bottom: 1px solid var(--card-border); 
+        }
+        
+        
+        
+        .logo { 
+            font-weight: 950; 
+            font-size: 1.4rem; 
+            color: var(--primary); 
+            letter-spacing: 1px; 
+        }
+
+
+
+        
+        
+        
+        
+        
+        
+        
+
+
+
+
+        
+        
+        .categories { display: flex; gap: 10px; overflow-x: auto; padding: 20px; justify-content: center; scrollbar-width: none; }
+        .categories::-webkit-scrollbar { display: none; }
+        .category-tab { 
+            padding: 10px 22px; 
+            background: var(--card-bg); 
+            border: 1px solid var(--card-border); 
+            border-radius: 50px; 
+            cursor: pointer; 
+            white-space: nowrap; 
+            font-weight: 600; 
+            font-size: 0.9rem;
+            transition: 0.3s; 
+            color: rgba(255,255,255,0.6);
+        }
+        .category-tab.active { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 0 20px rgba(0,136,255,0.3); }
+
+        .products-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 15px; 
+            padding: 15px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        @media (min-width: 768px) {
+            .products-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+        }
+
+        .product-card { 
+            background: var(--card-bg); 
+            border: 1px solid var(--card-border); 
+            border-radius: 20px; 
+            overflow: hidden; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+        }
+        .product-card:active { transform: scale(0.96); }
+        .product-card img { 
+            width: 100%; 
+            aspect-ratio: 16 / 10; 
+            object-fit: cover; 
+            border-bottom: 1px solid var(--card-border); 
+        }
+        .product-info { padding: 15px; display: flex; flex-direction: column; gap: 6px; flex-grow: 1; }
+        .product-info h3 { 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            color: rgba(255,255,255,0.9);
+            height: 2.8em; 
+            overflow: hidden; 
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-height: 1.3;
+        }
+        .price { color: var(--primary); font-weight: 900; font-size: 1.25rem; margin-top: auto; }
+
+        #drawer, #cart-sidebar { 
+            position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: #080808; 
+            border-top: 2px solid var(--primary); 
+            border-radius: 30px 30px 0 0; 
+            z-index: 1000; 
+            transform: translateY(100%); 
+            transition: 0.5s cubic-bezier(0.1, 1, 0.2, 1); 
+            padding: 30px; 
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        #drawer.active, #cart-sidebar.active { transform: translateY(0); }
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; z-index: 999; backdrop-filter: blur(8px); }
+        #overlay.active { display: block; }
+
+        .btn-add { background: var(--primary); color: #fff; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: 900; cursor: pointer; margin-top: 15px; font-size: 1rem; }
+        .variation-item { background: rgba(255,255,255,0.05); padding: 18px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.03); }
+        
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .btn-checkout { background: #25D366; color: #fff; border: none; padding: 20px; width: 100%; border-radius: 18px; font-weight: 950; cursor: pointer; font-size: 1.1rem; margin-top: 15px; }
+        
+        .cart-trigger { 
+            position: fixed; bottom: 30px; right: 30px; 
+            background: var(--primary); width: 65px; height: 65px; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-size: 1.6rem; z-index: 900; 
+            box-shadow: 0 10px 40px rgba(0,136,255,0.4); cursor: pointer; 
+            color: #fff;
+        }
+        .cart-count { 
+            position: absolute; top: -2px; right: -2px; 
+            background: #fff; color: var(--primary); font-size: 0.9rem; font-weight: 950; 
+            width: 26px; height: 26px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+        }
+    
+        
+        
+        
+
+        .hero { 
+            padding: 80px 20px 40px 20px; 
+            text-align: center; 
+            background: radial-gradient(circle at center, rgba(0,31,63,0.05) 0%, transparent 70%);
+        }
+        
+        .hero h1 { 
+            font-size: clamp(4rem, 18vw, 8rem) !important; 
+            font-weight: 950 !important; 
+            background: linear-gradient(to bottom, #00d2ff 0%, #0072ff 50%, #00d2ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 2px rgba(0,210,255,0.5));
+            text-transform: uppercase !important;
+            margin-bottom: 0px !important;
+            letter-spacing: -4px !important;
+            line-height: 0.9 !important;
+            position: relative;
+        }
+        /* Creating a 'brilho dentro' effect by layering */
+        .hero h1::after {
+            content: 'PIERBLOX';
+            position: absolute;
+            left: 0; top: 0;
+            width: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.8) 50%, transparent 60%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            animation: shine 3s infinite;
+        }
+        @keyframes shine {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        
+        .hero p { 
+            opacity: 1; /* More visible */
+            font-size: 1.1rem; 
+            color: #ffffff !important; /* WHITE */
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: lowercase;
+            margin-top: -5px;
+        }
+
+
+        /* Remove sublinhado e bordas ao clicar */
+        * {
+            -webkit-tap-highlight-color: transparent !important;
+            outline: none !important;
+        }
+        a, button {
+            text-decoration: none !important;
+        }
+        a:focus, button:focus, a:active, button:active {
+            outline: none !important;
+            box-shadow: none !important;
+            text-decoration: none !important;
+        }
+
+        /* Impede a seleção de texto e o brilho ao clicar no logo */
+        .hero h1, .logo {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -webkit-touch-callout: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+        * {
+            -webkit-tap-highlight-color: transparent !important;
+        }
+</style>
+<!-- Update: 1784470637.159658 --><!-- Force Refresh 1784470711.9840748 --><!-- Update CD 1784470745.3839927 --><!-- Update Name 1784470840.1610258 --><!-- Premium Update 1784470946.3109953 --><!-- Electric Blue Update 1784471032.1042376 --><!-- White Tagline Update 1784471085.5434437 --><!-- No Highlight Update 1784471225.2024455 --><!-- Reset Selection Update 1784471260.6311371 --><!-- Buddha Image Update 1784471614.5446315 --><!-- URL Buddha Update 1784471718.9161263 --><!-- Image Fix 1784471776.6370814 --><!-- Final Buddha Image Fix 1784471910.9981742 --><!-- JS Gas Update 1784472176.7078576 --><!-- Restore Both Update 1784472256.6528845 --><!-- Dough Update 1784472519.2048569 --><!-- Final Image Sync 1784472571.201203 --><!-- Final Debug Sync 1784472674.843261 --><!-- Hosted Fix 1784472760.4862144 --><!-- Final Force Sync 1784472798.5341318 --><!-- DEPLOY_ID: 1784472915 --></head>
+<body><div style="background:yellow;color:black;text-align:center;font-weight:bold;padding:20px;z-index:99999;position:relative;">VERSÃO NOVA CARREGADA: 1784473028</div><div style="background:red; color:white; text-align:center; position:fixed; top:0; width:100%; z-index:9999; font-size:10px;">VERSÃO ATUALIZADA: 1784472975</div>
+    <div id="overlay" onclick="closeAll()"></div>
+    
+    <header>
+        <div class="logo">PIERBLOX</div>
+        <div onclick="openCart()"><i class="fas fa-shopping-cart"></i></div>
+    </header>
+
+    
+
+    <div class="hero"><h1>PIERBLOX</h1><p>sua lojinha virtual favorita!</p></div><div class="categories">
+        <div class="category-tab active" onclick="filterCat('todos', this)">Todos</div>
+        <div class="category-tab" onclick="filterCat('bloxfruit', this)">Blox Fruits</div>
+        <div class="category-tab" onclick="filterCat('robux', this)">Robux</div>
+    </div>
+
+    <div class="products-grid" id="grid"></div>
+
+    <div class="cart-trigger" onclick="openCart()">
+        <i class="fas fa-shopping-bag"></i>
+        <div class="cart-count" id="cart-count">0</div>
+    </div>
+
+    <div id="drawer">
+        <h2 id="d-title" style="font-weight:950; margin-bottom:10px;"></h2>
+        <p id="d-desc" style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin-bottom:20px;"></p>
+        <div id="d-vars"></div>
+    </div>
+
+    <div id="cart-sidebar">
+        <h2 style="font-weight:950; margin-bottom:20px;">Seu Carrinho</h2>
+        <div id="cart-items"></div>
+        <div style="display:flex; justify-content:space-between; font-weight:950; font-size:1.2rem; margin-bottom:20px;">
+            <span>Total:</span>
+            <span id="cart-total">R$ 0,00</span>
+        </div>
+        <button class="btn-checkout" onclick="checkout()">FINALIZAR NO WHATSAPP</button>
+    </div>
+
+    <script>
+        let products = [{"id": 201, "name": "PORTAL INV+GOD+LVL 2800", "desc": "Portal com Invisibilidade, God Human e Level 2800.", "img": "https://conservation-aquamarine-eyaeej6r.edgeone.dev/1%20Sem%20Título_20260719060346.png", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 202, "name": "RANDOM 2 FRUTA MÍTICA INV", "desc": "Conta com 2 Frutas Míticas aleatórias no inventário.", "img": "https://scary-jade-5zeu7nro.edgeone.dev/1%20Sem%20Título_20260719061159.png", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 203, "name": "DOUGH INV", "desc": "Fruta Dough no inventário.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/assets/dough_hosted_v3.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 204, "name": "GOD BUDA", "desc": "Conta com Buddha e itens God.", "img": "https://invisible-scarlet-eax8nofa.edgeone.dev/1%20Sem%20Título_20260719113218.png", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.73}]}, {"id": 205, "name": "GAS INV+GOD", "desc": "Fruta Gas no inventário + God.", "img": "https://estimated-crimson-qbejfoi3.edgeone.dev/1%20Sem%20Título_20260719114121.png", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 6.5}]}, {"id": 206, "name": "KITSUNE INV", "desc": "Fruta Kitsune no inventário.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 35.19}]}, {"id": 207, "name": "DOUGH INV+LVL 2800 GOD", "desc": "Dough no inventário, Level 2800 e God Human.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/assets/dough_hosted_v3.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.78}]}, {"id": 208, "name": "YETI INV", "desc": "Fruta Yeti no inventário.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 9.19}]}, {"id": 209, "name": "SANGUINE ART+GOD+LVL 2800", "desc": "Sanguine Art, God Human e Level 2800.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 10.3}]}, {"id": 210, "name": "T-REX INV+LVL 2800 GOD", "desc": "Fruta T-Rex no inventário, Level 2800 e God Human.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 7.01}]}, {"id": 301, "name": "GOD CDK SG VALK ESPELHO SANGUIN...", "desc": "Conta completa com God Human, CDK, Soul Guitar e Valk.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 17.21}]}, {"id": 302, "name": "FRUTA MÍTICA", "desc": "Fruta mítica aleatória.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 303, "name": "GOD + LVL 2800", "desc": "Nível máximo com God Human.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 304, "name": "TIGER INV", "desc": "Fruta Tiger no inventário.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 11.96}]}, {"id": 305, "name": "LVL 1500", "desc": "Conta level 1500 garantido.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 306, "name": "GOD + LVL 2800 + KITSUNE USADA", "desc": "Level 2800, God Human e Kitsune equipada.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 10.3}]}, {"id": 307, "name": "V4 CYBORG FULL + CDK + SG", "desc": "Cyborg V4 Full, CDK, Soul Guitar e God Human.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 16.38}]}, {"id": 308, "name": "GOD CDK SG VALK ESPELHO", "desc": "Itens God, CDK, SG e Valk.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 12.45}]}, {"id": 309, "name": "RANDOM 1 MÍTICA INV + BUDA", "desc": "Uma mítica no inv e Buddha equipada.", "img": "https://invisible-scarlet-eax8nofa.edgeone.dev/1%20Sem%20Título_20260719113218.png", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 310, "name": "LVL 2000 + RANDOM ITEM", "desc": "Conta level 2000 com itens aleatórios.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 401, "name": "V4 FULL+CDK+GOD+LVL 2800", "desc": "Raça V4 Full, CDK, God Human e Level 2800.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 18.6}]}, {"id": 402, "name": "RANDOM 2 MÍTICA INV+GOD+LVL 2800", "desc": "2 Míticas aleatórias no inv, God Human e Level 2800.", "img": "https://scary-jade-5zeu7nro.edgeone.dev/1%20Sem%20Título_20260719061159.png", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 6.5}]}, {"id": 403, "name": "V4 GHOUL FULL+CDK+SG+GOD+LVL 2...", "desc": "Ghoul V4 Full, CDK, Soul Guitar e God Human.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 16.38}]}, {"id": 404, "name": "GAS INV+LVL 2750 GOD", "desc": "Fruta Gas no inventário, Level 2750 e God Human.", "img": "https://estimated-crimson-qbejfoi3.edgeone.dev/1%20Sem%20Título_20260719114121.png", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 7.01}]}, {"id": 405, "name": "CDK+SG+GOD+LVL 2800", "desc": "CDK, Soul Guitar, God Human e Level Máximo.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 9.74}]}, {"id": 406, "name": "RANDOM 1 MÍTICA INV+PORTAL+GOD...", "desc": "Uma mítica no inv, Fruta Portal e God Human.", "img": "https://scary-jade-5zeu7nro.edgeone.dev/1%20Sem%20Título_20260719061159.png", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 407, "name": "DOUGH+LEVEL RANDOM", "desc": "Fruta Dough com level aleatório.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/assets/dough_hosted_v3.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.78}]}, {"id": 408, "name": "GRAVITY INV+GOD", "desc": "Fruta Gravity no inventário + God Human.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 409, "name": "V4 GHOUL FULL+CDK+GOD+LVL 2800", "desc": "Ghoul V4 Completa, CDK, God Human e Level Máximo.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 24.13}]}, {"id": 410, "name": "T-REX+CDK+SG+GOD+LVL 2550", "desc": "T-Rex, CDK, Soul Guitar e God Human.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 10.3}]}, {"id": 501, "name": "GOD VALK ESPELHO", "desc": "God Human com Valkyrie Helmet e Mirror Fractal.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 11.29}]}, {"id": 502, "name": "GOD+LVL 2800+LIGHT INV", "desc": "God Human, Level 2800 e Fruta Light no inventário.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 503, "name": "RANDOM 1 MÍTICA INV+GOD+LVL 2800", "desc": "Uma mítica aleatória no inv, God Human e Level 2800.", "img": "https://scary-jade-5zeu7nro.edgeone.dev/1%20Sem%20Título_20260719061159.png", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 504, "name": "PAIN INV+GOD+LVL 2800", "desc": "Fruta Pain no inventário, God Human e Level 2800.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 505, "name": "RANDOM MÍTICA+CDK+LVL 2800 GOD", "desc": "Mítica aleatória, Cursed Dual Katana e Level 2800.", "img": "https://scary-jade-5zeu7nro.edgeone.dev/1%20Sem%20Título_20260719061159.png", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 9.74}]}, {"id": 506, "name": "V4 ANGEL FULL+SANGUINE ART+CDK", "desc": "Angel V4 Full, Sanguine Art e Cursed Dual Katana.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 20.81}]}, {"id": 507, "name": "GOD+LVL 2800+GEAR 1 RANDOM RACE", "desc": "God Human, Level 2800 e Raça aleatória.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 9.74}]}, {"id": 508, "name": "V4 MINK FULL+CDK+SG+GOD+LVL 2800", "desc": "Mink V4 Full, CDK, Soul Guitar e God Human.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 15.28}]}, {"id": 509, "name": "MAMUTE+LVL 2800 GOD", "desc": "Fruta Mamute equipada, Level 2800 e God Human.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 510, "name": "LVL 1500-2000+BELI", "desc": "Conta entre Level 1500 e 2000 com bastante Beli.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 601, "name": "V4 MINK FULL+CDK+GOD+LVL 2800+...", "desc": "Mink V4 Full, CDK, God Human e Level 2800.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 24.13}]}, {"id": 602, "name": "DOUGH+CDK+SG+GOD+LVL 2550+ES...", "desc": "Dough equipada, CDK, Soul Guitar e God Human.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/assets/dough_hosted_v3.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 13.06}]}, {"id": 603, "name": "LEOPARD+CDK+SG+GOD+LVL 2550+...", "desc": "Leopard equipada, CDK, Soul Guitar e God Human.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 13.06}]}, {"id": 604, "name": "SANGUINE ART+GOD HUMAN LVL 28...", "desc": "Sanguine Art e God Human Level Máximo.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 18.6}]}, {"id": 605, "name": "V4 GHOUL FULL+SANGUINE ART+CDK...", "desc": "Ghoul V4 Full, Sanguine Art e CDK.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 21.91}]}, {"id": 606, "name": "6 V4 FULL+GOD+LVL 2800+RANDOM ...", "desc": "Conta com 6 Raças V4 Full e God Human.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 37.96}]}, {"id": 607, "name": "RANDOM INV 9 MÍTICA INV+GOD+LVL ...", "desc": "9 Míticas no inventário, God Human e Level Máximo.", "img": "https://scary-jade-5zeu7nro.edgeone.dev/1%20Sem%20Título_20260719061159.png", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 32.98}]}, {"id": 608, "name": "GOD DOUGH FULL+VALK ESPELHO", "desc": "God Human, Dough despertada, Valkyrie e Espelho.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/assets/dough_hosted_v3.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 15.39}]}, {"id": 609, "name": "V4 CYBORG FULL+CDK+GOD +140-18...", "desc": "Cyborg V4 Full com itens lendários.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 21.36}]}, {"id": 610, "name": "GOD SPIRIT", "desc": "God Human com fruta Spirit.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 701, "name": "RANDOM INV 7 MÍTICA INV+GOD+L LVL 2800", "desc": "7 Míticas no inventário, God Human e Level Máximo.", "img": "https://scary-jade-5zeu7nro.edgeone.dev/1%20Sem%20Título_20260719061159.png", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 25.23}]}, {"id": 702, "name": "CDK+LVL 2800 GOD+ESPELHO+VALK", "desc": "CDK, God Human, Espelho e Valkyrie no Level Máximo.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 18.6}]}, {"id": 703, "name": "GOD LVL 2800+ESPELHO", "desc": "God Human no Level 2800 com Mirror Fractal.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 7.53}]}, {"id": 704, "name": "GOD SHADOW", "desc": "God Human com fruta Shadow no inventário.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 705, "name": "RANDOM 1 MÍTICA INV+GOD+LVL 2800", "desc": "Uma mítica aleatória no inv, God Human e Level 2800.", "img": "https://scary-jade-5zeu7nro.edgeone.dev/1%20Sem%20Título_20260719061159.png", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 706, "name": "VENOM INV+GOD LVL 2800", "desc": "Fruta Venom no inventário, God Human e Level Máximo.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 707, "name": "GOD - KITSUNE USADA", "desc": "God Human com fruta Kitsune equipada e usada.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 14.17}]}, {"id": 708, "name": "LVL 1500-2550+HIGH RATE FRUTA MÍTICA", "desc": "Conta com alta taxa de drop de frutas míticas.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 5.67}]}, {"id": 709, "name": "V4 DRACO FULL+CDK+SG+GOD+LVL 2800", "desc": "Raça Draco V4 Full com itens God e CDK.", "img": "https://raw.githubusercontent.com/mykallyx/pierblox-store/main/media/1784447302415.jpg", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 57.22}]}];
+        let cart = [];
+        let currentCat = 'todos';
+
+        function render() {
+            const grid = document.getElementById('grid');
+            const filtered = currentCat === 'todos' ? products : products.filter(p => p.category === currentCat);
+            
+            grid.innerHTML = filtered.map(p => {
+                const price = Math.min(...p.variations.map(v => v.p));
+                return `
+                    <div class="product-card" onclick="openProduct(${p.id})">
+                        <img src="${p.img}">
+                        <div class="product-info">
+                            <h3>${p.name}</h3>
+                            <div class="price">R$ ${price.toFixed(2).replace('.', ',')}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterCat(cat, el) {
+            currentCat = cat;
+            document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            render();
+        }
+
+        function openProduct(id) {
+            const p = products.find(x => x.id === id);
+            document.getElementById('d-title').innerText = p.name;
+            document.getElementById('d-desc').innerText = p.desc;
+            document.getElementById('d-vars').innerHTML = p.variations.map(v => `
+                <div class="variation-item">
+                    <div><b>${v.n}</b> - R$ ${v.p.toFixed(2).replace('.',',')}</div>
+                    <button class="btn-add" style="width:auto; margin:0; padding:8px 15px;" onclick="addToCart(${p.id}, '${v.n}', ${v.p})">ADICIONAR</button>
+                </div>
+            `).join('');
+            document.getElementById('drawer').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function addToCart(id, n, p) {
+            const prod = products.find(x => x.id === id);
+            cart.push({ name: prod.name, var: n, price: p });
+            updateCart();
+            closeAll();
+        }
+
+        function updateCart() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const itemsDiv = document.getElementById('cart-items');
+            let total = 0;
+            
+            if(cart.length === 0) {
+                itemsDiv.innerHTML = '<p style="opacity:0.5; text-align:center;">Vazio</p>';
+            } else {
+                itemsDiv.innerHTML = cart.map((item, i) => {
+                    total += item.price;
+                    return `
+                        <div class="cart-item">
+                            <div><b>${item.name}</b><br><small>${item.var}</small></div>
+                            <div>R$ ${item.price.toFixed(2).replace('.',',')} <i class="fas fa-trash" onclick="removeItem(${i})" style="margin-left:10px; color:#ff4444;"></i></div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            document.getElementById('cart-total').innerText = 'R$ ' + total.toFixed(2).replace('.', ',');
+        }
+
+        function removeItem(i) {
+            cart.splice(i, 1);
+            updateCart();
+        }
+
+        function openCart() {
+            window.scrollTo(0,0);
+            document.getElementById('cart-sidebar').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+            updateCart();
+        }
+
+        function closeAll() {
+            document.getElementById('drawer').classList.remove('active');
+            document.getElementById('cart-sidebar').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        function checkout() {
+            if(cart.length === 0) return;
+            let msg = 'Olá PierBlox! Gostaria de fazer um pedido:\n\n';
+            let total = 0;
+            cart.forEach((item, i) => {
+                msg += (i+1) + '. ' + item.name + ' (' + item.var + ') - R$ ' + item.price.toFixed(2).replace('.', ',') + '\n';
+                total += item.price;
+            });
+            msg += '\n*Total: R$ ' + total.toFixed(2).replace('.', ',') + '*';
+            window.location.href = 'https://wa.me/5591983326950?text=' + encodeURIComponent(msg);
+        }
+
+        render();
+    </script>
+</body>
+</html>
