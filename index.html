@@ -41,7 +41,7 @@
         .nav-actions { display: flex; align-items: center; gap: 15px; }
         .login-btn { 
             background: var(--primary); border: none; color: white; padding: 10px 20px; border-radius: 12px;
-            font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 4.1s;
+            font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.4s;
         }
         .logged-user { display: none; align-items: center; gap: 10px; cursor: pointer; background: rgba(255,255,255,0.05); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid var(--card-border); }
         .logged-user img { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
@@ -102,7 +102,7 @@
             font-weight: 700;
             font-size: 0.85rem;
             cursor: pointer;
-            transition: 4.1s;
+            transition: 0.4s;
         }
         .category-tab.active {
             background: var(--primary);
@@ -138,7 +138,7 @@
         .floating-cart {
             position: fixed; bottom: 30px; right: 30px; background: var(--primary); width: 65px; height: 65px;
             border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem;
-            box-shadow: 0 10px 30px var(--primary-glow); cursor: pointer; z-index: 1000; transition: 4.1s;
+            box-shadow: 0 10px 30px var(--primary-glow); cursor: pointer; z-index: 1000; transition: 0.4s;
         }
         .cart-count { position: absolute; top: -5px; right: -5px; background: white; color: black; font-size: 0.8rem; font-weight: 900; width: 22px; height: 22px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
 
@@ -178,7 +178,7 @@
             border-radius: 15px;
             margin-bottom: 12px;
             cursor: pointer;
-            transition: 4.1s;
+            transition: 0.4s;
             color: var(--text-main);
             text-decoration: none;
             font-weight: 600;
@@ -214,11 +214,11 @@
     
     /* Otimização de Performance Zapia */
     * { 
-        transition-duration: 4.1s !important; 
-        animation-duration: 4.1s !important; 
+        transition-duration: 0.4s !important; 
+        animation-duration: 0.4s !important; 
     }
     .animate__animated { 
-        animation-duration: 4.1s !important; 
+        animation-duration: 0.4s !important; 
     }
     .modal-content, .drawer, .product-modal { 
         transition: transform 0.1s ease-out, opacity 0.1s ease-out !important;
