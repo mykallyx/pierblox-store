@@ -566,74 +566,69 @@
         renderProducts(); updateCartUI(); updateAuthUI();
     </script>
 
+
 <script>
 const MP_ACCESS_TOKEN = 'APP_USR-1598174317006783-071901-9a069520bee2070399bb41e01d5d0c6c-2373373406';
 
-
 async function generatePix(amount, description) {
-    if (typeof showToast === 'function') showToast('Gerando Pix via Proxy...');
-    try {
-        const payload = {
-            transaction_amount: parseFloat(amount),
-            description: description,
-            payment_method_id: 'pix',
-            payer: {
-                email: 'cliente@pierblox.com',
-                first_name: 'Cliente',
-                last_name: 'PierBlox',
-                identification: { type: 'CPF', number: '00000000000' }
-            }
-        };
+    const toast = (m) => { if (typeof showToast === 'function') showToast(m); };
+    toast('Iniciando Pix...');
+    
+    const payload = {
+        transaction_amount: parseFloat(amount),
+        description: description,
+        payment_method_id: 'pix',
+        payer: {
+            email: 'cliente@pierblox.com',
+            first_name: 'Cliente',
+            last_name: 'PierBlox',
+            identification: { type: 'CPF', number: '19100000000' }
+        }
+    };
 
-        const response = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://api.mercadopago.com/v1/payments'), {
+    try {
+        // Tentativa direta primeiro (alguns navegadores permitem se o MP estiver com headers ok)
+        let response = await fetch('https://api.mercadopago.com/v1/payments', {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + MP_ACCESS_TOKEN,
                 'Content-Type': 'application/json',
-                'X-Idempotency-Key': 'pb_' + Math.random().toString(36).substring(2, 15)
+                'X-Idempotency-Key': 'pb_' + Date.now()
             },
             body: JSON.stringify(payload)
-        });
+        }).catch(() => null);
 
-        if (!response.ok) {
-            const errorData = await response.text();
-            console.error('Erro na resposta:', errorData);
-            throw new Error('HTTP ' + response.status);
+        // Se falhou (CORS), tenta via Proxy
+        if (!response || !response.ok) {
+            toast('Ajustando conexão...');
+            response = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://api.mercadopago.com/v1/payments'), {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + MP_ACCESS_TOKEN,
+                    'Content-Type': 'application/json',
+                    'X-Idempotency-Key': 'pb_p_' + Date.now()
+                },
+                body: JSON.stringify(payload)
+            });
         }
 
         const data = await response.json();
+        console.log('Resposta MP:', data);
+
         if (data.point_of_interaction) {
             const qrCode = data.point_of_interaction.transaction_data.qr_code;
             const qrCodeBase64 = data.point_of_interaction.transaction_data.qr_code_base64;
             showPixModal(qrCode, qrCodeBase64, data.id);
+        } else if (data.message) {
+            toast('Erro MP: ' + data.message);
+            console.error('Erro MP:', data);
         } else {
-            console.error('Dados MP incompletos:', data);
-            if (typeof showToast === 'function') showToast('Erro nos dados do Pix.');
+            throw new Error('Resposta incompleta');
         }
     } catch (err) {
-        console.error('Erro detalhado:', err);
-        if (typeof showToast === 'function') showToast('Erro na conexão: ' + err.message);
+        console.error('Erro Geral:', err);
+        toast('Erro ao gerar Pix. Veja o console.');
     }
-}
-
-
-function showPixModal(copyPaste, qrImage, paymentId) {
-    if(document.getElementById('pix-payment-modal')) document.getElementById('pix-payment-modal').remove();
-    const modalHtml = `
-        <div id="pix-payment-modal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;font-family:sans-serif;">
-            <div style="background:#111;padding:30px;border-radius:15px;max-width:400px;width:100%;text-align:center;border:2px solid #ff00ff;box-shadow:0 0 20px #ff00ff55;">
-                <h2 style="margin-bottom:20px;color:#fff;">Pagamento Pix</h2>
-                <img src="data:image/png;base64,${qrImage}" style="width:200px;margin-bottom:20px;border-radius:10px;border:2px solid #333;">
-                <p style="font-size:12px;opacity:0.7;margin-bottom:10px;color:#fff;">Copia e Cola:</p>
-                <textarea readonly id="pix-code-area" style="width:100%;background:#222;color:#fff;border:1px solid #444;padding:10px;border-radius:5px;font-size:10px;height:60px;margin-bottom:20px;resize:none;word-break:break-all;">${copyPaste}</textarea>
-                <button onclick="copyPixCode()" style="background:#ff00ff;color:white;border:none;padding:12px;width:100%;border-radius:8px;font-weight:bold;margin-bottom:10px;cursor:pointer;text-transform:uppercase;">Copiar Código</button>
-                <p id="payment-status" style="font-size:14px;color:#ff00ff;margin-top:10px;font-weight:bold;">Aguardando pagamento...</p>
-                <button onclick="document.getElementById('pix-payment-modal').remove()" style="background:transparent;color:#777;border:none;margin-top:15px;cursor:pointer;">Cancelar</button>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    checkPaymentStatus(paymentId);
 }
 
 function copyPixCode() {
@@ -644,49 +639,27 @@ function copyPixCode() {
 }
 
 async function checkPaymentStatus(id) {
+    const statusText = document.getElementById('payment-status');
     const interval = setInterval(async () => {
-        if (!document.getElementById('pix-payment-modal')) {
-            clearInterval(interval);
-            return;
-        }
         try {
-            const response = await fetch('https://api.mercadopago.com/v1/payments/' + id, {
+            const r = await fetch(`https://api.mercadopago.com/v1/payments/${id}`, {
                 headers: { 'Authorization': 'Bearer ' + MP_ACCESS_TOKEN }
             });
-            const data = await response.json();
-            if (data.status === 'approved') {
+            const d = await r.json();
+            if (d.status === 'approved') {
+                statusText.innerText = '✅ PAGAMENTO APROVADO!';
+                statusText.style.color = '#00ff00';
                 clearInterval(interval);
-                document.getElementById('payment-status').innerText = '✅ PAGAMENTO APROVADO!';
-                document.getElementById('payment-status').style.color = '#00ff00';
-                setTimeout(() => {
-                     document.getElementById('pix-payment-modal').remove();
-                     if (typeof showToast === 'function') showToast('Sucesso! Entrega em processamento.');
-                }, 3000);
+                setTimeout(() => alert('Pagamento confirmado! Entre em contato para receber seu produto.'), 2000);
             }
-        } catch (e) {}
+        } catch(e) {}
     }, 5000);
 }
-
-// Sobrescrever funções globais
-window.checkout = function() {
-    if (typeof cart === 'undefined' || cart.length === 0) {
-        if (typeof showToast === 'function') showToast('Carrinho vazio!');
-        return;
-    }
-    const total = cart.reduce((s, i) => s + i.p, 0);
-    const names = cart.map(i => i.n).join(', ');
-    generatePix(total, 'Pedido PierBlox: ' + names);
-};
-
-window.buyItem = function(id) {
-    const item = products.find(p => p.id === id);
-    if (item) {
-        generatePix(item.price, 'Compra PierBlox: ' + item.name);
-    }
-};
 </script>
+
 </body>
 </html>
+
 
 
 
