@@ -196,6 +196,20 @@
         }
     </style>
 <style> [data-vercel-toolbar] { display: none !important; } </style>
+
+<style id="vercel-hide-patch">
+    [data-vercel-toolbar], 
+    [data-vercel-feedback-button], 
+    #vercel-live-feedback-fixed, 
+    .vercel-toolbar-container,
+    #_next-analytics-debug { 
+        display: none !important; 
+        visibility: hidden !important; 
+        opacity: 0 !important; 
+        pointer-events: none !important;
+    }
+</style>
+
 </head>
 <body>
 
