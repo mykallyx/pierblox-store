@@ -195,6 +195,18 @@
             text-align: center;
         }
     </style>
+
+    <style>
+        #vercel-live-feedback, 
+        .vercel-toolbar,
+        [id^="vercel-live-feedback"],
+        vercel-live-feedback { 
+            display: none !important; 
+            visibility: hidden !important; 
+            opacity: 0 !important; 
+            pointer-events: none !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -411,8 +423,14 @@
             e.preventDefault();
             const u = document.getElementById('su-user').value.trim();
             const p = document.getElementById('su-pass').value.trim();
-            // Pegar o banco de dados global dos usuários
             let db = JSON.parse(localStorage.getItem('pb_global_db')) || {};
+            if(db[u]) return showAlert('AVISO', 'Este usuário já está em uso!');
+            db[u] = { pass: p };
+            localStorage.setItem('pb_global_db', JSON.stringify(db));
+            showAlert('SUCESSO', 'Conta criada! Pode entrar agora.', false);
+            if(document.getElementById('form-signup')) document.getElementById('form-signup').reset();
+            switchAuth('login');
+        };
             if(db[u]) return showAlert('AVISO', 'Este usuário já está em uso!');
             db[u] = { pass: p };
             // Salvar no banco global (que não é removido no logout)
@@ -425,8 +443,16 @@
             e.preventDefault();
             const u = document.getElementById('li-user').value.trim();
             const p = document.getElementById('li-pass').value.trim();
-            // Buscar no banco global
             let db = JSON.parse(localStorage.getItem('pb_global_db')) || {};
+            if(db[u] && db[u].pass === p) {
+                user = { name: u, photo: `https://ui-avatars.com/api/?name=${u}&background=ff0000&color=fff` };
+                localStorage.setItem('pb_user', JSON.stringify(user));
+                updateAuthUI(); closeAuth(); showToast(`Bem-vindo, ${u}!`);
+                if(document.getElementById('form-login')) document.getElementById('form-login').reset();
+            } else {
+                showAlert('ERRO', 'Usuário ou senha incorretos!');
+            }
+        };
             if(db[u] && db[u].pass === p) {
                 user = { name: u, photo: `https://ui-avatars.com/api/?name=${u}&background=ff0000&color=fff` };
                 localStorage.setItem('pb_user', JSON.stringify(user));
@@ -559,4 +585,5 @@
     </script>
 </body>
 </html>
+
 
