@@ -562,14 +562,28 @@
             setTimeout(() => t.style.display = 'none', 3000);
         }
 
-                async function checkout() {
-            if(!cart.length) return showAlert('AVISO', 'Carrinho vazio!');
-            const total = cart.reduce((s, x) => s + x.price, 0).toFixed(2);
-            showToast('Gerando Pix...');
-            try {
-                const response = await fetch('https://pierblox-store.vercel.app/api/pix.pricey', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                async 
+    function checkout() {
+        if (cart.length === 0) return;
+
+        let message = "Olá, gostaria de finalizar meu pedido:
+
+";
+        let total = 0;
+
+        cart.forEach(item => {
+            const p = products.find(prod => prod.id === item.id);
+            message += ;
+            message += ;
+            total += item.price * item.quantity;
+        });
+
+        message += ;
+        
+        const encodedMessage = encodeURIComponent(message);
+        window.location.href = ;
+    }
+,
                     body: JSON.stringify({ amount: total, description: 'Pedido PierBlox' })
                 });
                 const data = await response.json();
