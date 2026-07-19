@@ -543,20 +543,73 @@
             setTimeout(() => t.style.display = 'none', 3000);
         }
 
-        function checkout() {
+        async function checkout() {
             if(!cart.length) return showAlert('AVISO', 'Carrinho vazio!');
-            let items = cart.map(i => `• ${i.n}`).join('\n');
-            let total = cart.reduce((s, x) => s + x.p, 0).toFixed(2);
-            if(user) {
-                let h = JSON.parse(localStorage.getItem(`h_${user.name}`)) || [];
-                h.unshift({ d: new Date().toLocaleDateString(), i: items, t: total });
-                localStorage.setItem(`h_${user.name}`, JSON.stringify(h));
+            const total = cart.reduce((s, x) => s + x.p, 0).toFixed(2);
+            const itemsNames = cart.map(i => i.n).join(', ');
+            
+            showToast('Gerando Pix...');
+            
+            try {
+                const response = await fetch('/api/pix', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: total, description: 'PierBlox: ' + itemsNames })
+                });
+                
+                const data = await response.json();
+                
+                if (data.point_of_interaction) {
+                    const qrCode = data.point_of_interaction.transaction_data.qr_code_base64;
+                    const paymentId = data.id;
+                    
+                    const modal = document.createElement('div');
+                    modal.id = 'pix-modal';
+                    modal.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px;text-align:center;backdrop-filter:blur(10px);";
+                    modal.innerHTML = `
+                        <div style="background:#111; padding:30px; border-radius:25px; border:1px solid #ff0000; max-width:400px; width:100%; font-family: sans-serif;">
+                            <h2 style="color:#ff0000; margin-bottom:15px; font-weight: 900;">PIX GERADO</h2>
+                            <p style="font-size:0.9rem; margin-bottom:20px; opacity:0.8; color: #fff;">Escaneie o QR Code abaixo para pagar. O sistema aprova automaticamente.</p>
+                            <div style="background: #fff; padding: 10px; border-radius: 15px; display: inline-block; margin-bottom: 20px;">
+                                <img src="data:image/png;base64,${qrCode}" style="width:200px; height:200px; display: block;">
+                            </div>
+                            <p id="pix-status" style="font-weight:bold; color:#fff; margin-bottom: 5px;">AGUARDANDO PAGAMENTO...</p>
+                            <div style="font-size: 0.7rem; color: #888; margin-bottom: 20px;">Não feche esta tela até a confirmação</div>
+                            <button onclick="document.getElementById('pix-modal').remove()" style="background:rgba(255,255,255,0.1); border:none; color:#fff; padding:12px 25px; border-radius:12px; cursor:pointer; font-weight: bold;">CANCELAR</button>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                    
+                    const interval = setInterval(async () => {
+                        const check = await fetch('/api/pix', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ payment_id: paymentId })
+                        });
+                        const statusData = await check.json();
+                        if (statusData.status === 'approved') {
+                            clearInterval(interval);
+                            document.getElementById('pix-status').innerHTML = "✅ PAGAMENTO APROVADO!";
+                            document.getElementById('pix-status').style.color = "#00ff00";
+                            if(user) {
+                                let h = JSON.parse(localStorage.getItem(`h_${user.name}`)) || [];
+                                h.unshift({ d: new Date().toLocaleDateString(), i: itemsNames, t: total });
+                                localStorage.setItem(`h_${user.name}`, JSON.stringify(h));
+                            }
+                            setTimeout(() => { location.reload(); }, 2500);
+                        }
+                    }, 5000);
+                } else {
+                    showAlert('ERRO', 'Não foi possível gerar o Pix. Verifique sua conexão.');
+                }
+            } catch (e) {
+                showAlert('ERRO', 'Falha na conexão com o servidor de pagamentos.');
             }
-            window.open(`https://wa.me/5591983326950?text=${encodeURIComponent("*PEDIDO PIERBLOX*\n\n"+items+"\n\n*TOTAL: R$ "+total+"*")}`);
         }
 
         renderProducts(); updateCartUI(); updateAuthUI();
     </script>
 </body>
 </html>
+
 
