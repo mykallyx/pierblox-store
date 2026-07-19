@@ -355,26 +355,7 @@
         
         
         // Carrega produtos do localStorage se existirem, senão usa o padrão
-        let products = JSON.parse(localStorage.getItem("pierblox_v2_new")) || [
-            {"name": "Portal Inv+God+Lvl 2800", "price": 7.0, "img": "https://i.ibb.co/m0f6w30/contas.png", "category": "bloxfruit", "desc": "Portal com Invisibilidade, God Human e Level 2800. Entrega imediata via WhatsApp."},{"name": "Portal Inv+God+Lvl 2800", "price": 7.0, "img": "https://i.ibb.co/m0f6w30/contas.png", "category": "bloxfruit", "desc": "Portal com Invisibilidade, God Human e Level 2800. Entrega imediata."}, {"name": "Discord Nitro Mensal", "price": 15.0, "img": "https://i.ibb.co/m0f6w30/contas.png", "category": "contas", "desc": "Ativação direta na sua conta do Discord. Mensal com todos os benefícios."},
-        { id: 999, name: "PRODUTO TESTE", price: 0.10, img: "https://via.placeholder.com/150", category: "TESTE", desc: "Teste Pix R$ 0,10" },
-            {
-                id: 1,
-                name: 'ROBUX BARATO',
-                desc: 'Receba seus Robux de forma rápida e segura.',
-                img: 'https://i.ibb.co/LpYx0Xk/robux.jpg',
-                category: 'robux',
-                variations: [{n: '1.000 Robux', p: 45.00}]
-            },
-            {
-                id: 2,
-                name: 'BLOX FRUITS',
-                desc: 'As melhores frutas do jogo.',
-                img: 'https://i.ibb.co/6y4G1vX/frutas.jpg',
-                category: 'frutas',
-                variations: [{n: 'Kitsune Permanente', p: 150.00}]
-            }
-        ];
+        let products = [{"id": 100, "name": "Portal Inv+God+Lvl 2800", "desc": "Portal com Invisibilidade, God Human e Level 2800. Entrega imediata.", "img": "https://i.ibb.co/m0f6w30/contas.png", "category": "bloxfruit", "variations": [{"n": "Unidade", "p": 7.0}]}, {"id": 101, "name": "Discord Nitro Mensal", "desc": "Ativação direta na sua conta do Discord. Mensal com todos os benefícios.", "img": "https://i.ibb.co/m0f6w30/contas.png", "category": "contas", "variations": [{"n": "Mensal", "p": 15.0}]}, {"id": 1, "name": "ROBUX BARATO", "desc": "Receba seus Robux de forma rápida e segura.", "img": "https://i.ibb.co/LpYx0Xk/robux.jpg", "category": "robux", "variations": [{"n": "1.000 Robux", "p": 45.0}]}];
 
 
 
