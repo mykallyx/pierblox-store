@@ -552,7 +552,7 @@
             showToast('Gerando Pix...');
             
             try {
-                const response = await fetch('/api/pix', {
+                const response = await fetch('https://pierblox-store.vercel.app/api/pix.py', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ amount: total, description: 'PierBlox: ' + itemsNames })
@@ -582,7 +582,7 @@
                     document.body.appendChild(modal);
                     
                     const interval = setInterval(async () => {
-                        const check = await fetch('/api/pix', {
+                        const check = await fetch('https://pierblox-store.vercel.app/api/pix.py', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ payment_id: paymentId })
@@ -612,6 +612,7 @@
     </script>
 </body>
 </html>
+
 
 
 
