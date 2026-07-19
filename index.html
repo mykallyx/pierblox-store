@@ -150,8 +150,20 @@
             width: 26px; height: 26px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
         }
-    </style>
-<!-- Update: 1784470637.159658 --><!-- Force Refresh 1784470711.9840748 --><!-- Update CD 1784470745.3839927 --></head>
+    
+        .hero { padding: 60px 20px; text-align: center; background: transparent; }
+        .hero h1 { 
+            font-size: 4.5rem !important; 
+            font-weight: 950 !important; 
+            color: #001f3f !important; /* Azul Escuro */
+            text-shadow: none !important; /* Sem Brilho */
+            text-transform: uppercase !important;
+            margin-bottom: 5px !important;
+            letter-spacing: -2px !important;
+        }
+        .hero p { opacity: 0.5; font-size: 1rem; color: #fff; }
+</style>
+<!-- Update: 1784470637.159658 --><!-- Force Refresh 1784470711.9840748 --><!-- Update CD 1784470745.3839927 --><!-- Update Name 1784470840.1610258 --></head>
 <body>
     <div id="overlay" onclick="closeAll()"></div>
     
@@ -162,7 +174,7 @@
 
     
 
-    <div class="categories">
+    <div class="hero"><h1>PIERBLOX</h1><p>A Melhor Loja de Blox Fruits</p></div><div class="categories">
         <div class="category-tab active" onclick="filterCat('todos', this)">Todos</div>
         <div class="category-tab" onclick="filterCat('bloxfruit', this)">Blox Fruits</div>
         <div class="category-tab" onclick="filterCat('robux', this)">Robux</div>
