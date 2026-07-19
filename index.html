@@ -194,8 +194,54 @@
             width: 25px;
             text-align: center;
         }
+    
+    /* Estilo Zapia: Transparência e Blur */
+    .modal-content, .auth-modal, .cart-modal, #alert-modal .modal-inner {
+        background: rgba(10, 10, 10, 0.7) !important;
+        backdrop-filter: blur(15px) !important;
+        -webkit-backdrop-filter: blur(15px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8) !important;
+    }
+
+    /* Esconder Toolbar da Vercel de forma definitiva */
+    #vercel-live-feedback, 
+    [data-vercel-toolbar], 
+    .vercel-toolbar, 
+    #_next-analytics-debug,
+    vercel-live-feedback { 
+        display: none !important; 
+        visibility: hidden !important; 
+        opacity: 0 !important; 
+        pointer-events: none !important;
+        z-index: -9999 !important;
+    }
+
     </style>
-<style> [data-vercel-toolbar] { display: none !important; } </style>
+<style> [data-vercel-toolbar] { display: none !important; } 
+    /* Estilo Zapia: Transparência e Blur */
+    .modal-content, .auth-modal, .cart-modal, #alert-modal .modal-inner {
+        background: rgba(10, 10, 10, 0.7) !important;
+        backdrop-filter: blur(15px) !important;
+        -webkit-backdrop-filter: blur(15px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8) !important;
+    }
+
+    /* Esconder Toolbar da Vercel de forma definitiva */
+    #vercel-live-feedback, 
+    [data-vercel-toolbar], 
+    .vercel-toolbar, 
+    #_next-analytics-debug,
+    vercel-live-feedback { 
+        display: none !important; 
+        visibility: hidden !important; 
+        opacity: 0 !important; 
+        pointer-events: none !important;
+        z-index: -9999 !important;
+    }
+
+    </style>
 
 <style id="vercel-hide-patch">
     [data-vercel-toolbar], 
@@ -208,7 +254,30 @@
         opacity: 0 !important; 
         pointer-events: none !important;
     }
-</style>
+
+    /* Estilo Zapia: Transparência e Blur */
+    .modal-content, .auth-modal, .cart-modal, #alert-modal .modal-inner {
+        background: rgba(10, 10, 10, 0.7) !important;
+        backdrop-filter: blur(15px) !important;
+        -webkit-backdrop-filter: blur(15px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8) !important;
+    }
+
+    /* Esconder Toolbar da Vercel de forma definitiva */
+    #vercel-live-feedback, 
+    [data-vercel-toolbar], 
+    .vercel-toolbar, 
+    #_next-analytics-debug,
+    vercel-live-feedback { 
+        display: none !important; 
+        visibility: hidden !important; 
+        opacity: 0 !important; 
+        pointer-events: none !important;
+        z-index: -9999 !important;
+    }
+
+    </style>
 
 </head>
 <body>
