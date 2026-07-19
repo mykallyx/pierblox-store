@@ -111,9 +111,32 @@
 
         #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #111; border: 1px solid var(--primary); color: white; padding: 12px 30px; border-radius: 50px; display: none; z-index: 6000; font-weight: 700; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
 
-        @media (max-width: 600px) {
-            .main-title { font-size: 3rem; }
-            .sidebar { width: 100%; }
+        /* Sidebar adjustments */
+        .sidebar-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .sidebar-menu-item:hover {
+            background: rgba(255,0,0,0.1);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+        .sidebar-menu-item i {
+            color: var(--primary);
+            font-size: 1.2rem;
+            width: 25px;
+            text-align: center;
         }
     </style>
 </head>
@@ -187,14 +210,36 @@
         <div id="variations-list"></div>
     </div>
 
-    <!-- Sidebar (Carrinho / Perfil) -->
+    <!-- Sidebar (Menu Geral) -->
     <div class="sidebar" id="sidebar">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
             <h2 id="sidebar-title" style="font-weight: 950; font-size: 1.8rem;">MENU</h2>
             <i class="fas fa-times" onclick="closeAll()" style="font-size: 1.5rem; cursor: pointer; opacity: 0.5;"></i>
         </div>
         
-        <div id="cart-section" style="flex: 1; display: flex; flex-direction: column;">
+        <div id="menu-section" style="display: flex; flex-direction: column;">
+            <div class="sidebar-menu-item" onclick="openCartFromMenu()">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Meu Carrinho</span>
+            </div>
+            <a href="https://discord.gg/pierblox" target="_blank" class="sidebar-menu-item">
+                <i class="fab fa-discord"></i>
+                <span>Comunidade Discord</span>
+            </a>
+            <a href="https://wa.me/5511999999999" target="_blank" class="sidebar-menu-item">
+                <i class="fas fa-headset"></i>
+                <span>Suporte Online</span>
+            </a>
+            <a href="https://instagram.com/pierblox" target="_blank" class="sidebar-menu-item">
+                <i class="fas fa-user-shield"></i>
+                <span>Falar com o Dono</span>
+            </a>
+        </div>
+
+        <div id="cart-section" style="display: none; flex: 1; flex-direction: column;">
+            <div style="margin-bottom: 20px; cursor: pointer; color: var(--primary); font-weight: 700;" onclick="showMainMenu()">
+                <i class="fas fa-arrow-left"></i> Voltar ao Menu
+            </div>
             <div id="cart-items-list" style="flex: 1; overflow-y: auto;"></div>
             <div style="margin-top: 20px; border-top: 1px solid var(--card-border); padding-top: 20px;">
                 <div style="display: flex; justify-content: space-between; font-weight: 900; font-size: 1.2rem; margin-bottom: 20px;">
@@ -205,6 +250,9 @@
         </div>
 
         <div id="profile-section" style="display: none; flex: 1; flex-direction: column;">
+            <div style="margin-bottom: 20px; cursor: pointer; color: var(--primary); font-weight: 700;" onclick="showMainMenu()">
+                <i class="fas fa-arrow-left"></i> Voltar ao Menu
+            </div>
             <div style="text-align: center; margin-bottom: 30px;">
                 <img src="" id="profile-img-large" class="profile-photo-large">
                 <h2 id="profile-name-display" style="font-weight: 950; margin-top: 15px; font-size: 1.8rem;"></h2>
@@ -327,17 +375,32 @@
         function removeItem(i) { cart.splice(i, 1); localStorage.setItem('pb_cart', JSON.stringify(cart)); updateCartUI(); }
 
         function toggleSidebar() {
+            showMainMenu();
+            document.getElementById('sidebar').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function showMainMenu() {
+            document.getElementById('sidebar-title').innerText = "MENU";
+            document.getElementById('menu-section').style.display = 'flex';
+            document.getElementById('cart-section').style.display = 'none';
+            document.getElementById('profile-section').style.display = 'none';
+        }
+
+        function openCartFromMenu() {
             document.getElementById('sidebar-title').innerText = "CARRINHO";
-            document.getElementById('cart-section').style.display = "flex";
-            document.getElementById('profile-section').style.display = "none";
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
+            document.getElementById('menu-section').style.display = 'none';
+            document.getElementById('cart-section').style.display = 'flex';
+            document.getElementById('profile-section').style.display = 'none';
+            updateCartUI();
         }
 
         function openProfile() {
+            if(!user) return openAuth();
             document.getElementById('sidebar-title').innerText = "PERFIL";
-            document.getElementById('cart-section').style.display = "none";
-            document.getElementById('profile-section').style.display = "flex";
+            document.getElementById('menu-section').style.display = 'none';
+            document.getElementById('cart-section').style.display = 'none';
+            document.getElementById('profile-section').style.display = 'flex';
             document.getElementById('profile-img-large').src = user.photo;
             document.getElementById('profile-name-display').innerText = user.name;
             const h = JSON.parse(localStorage.getItem(`h_${user.name}`)) || [];
