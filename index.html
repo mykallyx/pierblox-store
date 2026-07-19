@@ -569,41 +569,53 @@
 <script>
 const MP_ACCESS_TOKEN = 'APP_USR-1598174317006783-071901-9a069520bee2070399bb41e01d5d0c6c-2373373406';
 
+
 async function generatePix(amount, description) {
-    if (typeof showToast === 'function') showToast('Gerando Pix...');
+    if (typeof showToast === 'function') showToast('Gerando Pix via Proxy...');
     try {
-        const response = await fetch('https://api.mercadopago.com/v1/payments', {
+        const payload = {
+            transaction_amount: parseFloat(amount),
+            description: description,
+            payment_method_id: 'pix',
+            payer: {
+                email: 'cliente@pierblox.com',
+                first_name: 'Cliente',
+                last_name: 'PierBlox',
+                identification: { type: 'CPF', number: '00000000000' }
+            }
+        };
+
+        const response = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://api.mercadopago.com/v1/payments'), {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + MP_ACCESS_TOKEN,
                 'Content-Type': 'application/json',
                 'X-Idempotency-Key': 'pb_' + Math.random().toString(36).substring(2, 15)
             },
-            body: JSON.stringify({
-                transaction_amount: parseFloat(amount),
-                description: description,
-                payment_method_id: 'pix',
-                payer: {
-                    email: 'cliente@pierblox.com',
-                    first_name: 'Cliente',
-                    last_name: 'PierBlox',
-                    identification: { type: 'CPF', number: '00000000000' }
-                }
-            })
+            body: JSON.stringify(payload)
         });
+
+        if (!response.ok) {
+            const errorData = await response.text();
+            console.error('Erro na resposta:', errorData);
+            throw new Error('HTTP ' + response.status);
+        }
+
         const data = await response.json();
         if (data.point_of_interaction) {
             const qrCode = data.point_of_interaction.transaction_data.qr_code;
             const qrCodeBase64 = data.point_of_interaction.transaction_data.qr_code_base64;
             showPixModal(qrCode, qrCodeBase64, data.id);
         } else {
-            if (typeof showToast === 'function') showToast('Erro ao gerar Pix.');
+            console.error('Dados MP incompletos:', data);
+            if (typeof showToast === 'function') showToast('Erro nos dados do Pix.');
         }
     } catch (err) {
-        if (typeof showToast === 'function') showToast('Erro na conexão. Verifique o console.');
         console.error('Erro detalhado:', err);
+        if (typeof showToast === 'function') showToast('Erro na conexão: ' + err.message);
     }
 }
+
 
 function showPixModal(copyPaste, qrImage, paymentId) {
     if(document.getElementById('pix-payment-modal')) document.getElementById('pix-payment-modal').remove();
@@ -675,6 +687,7 @@ window.buyItem = function(id) {
 </script>
 </body>
 </html>
+
 
 
 
