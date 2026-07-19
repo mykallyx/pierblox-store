@@ -196,20 +196,7 @@
         }
     </style>
 </head>
-<body><script>localStorage.removeItem("pierblox_products");
-    window.buyItem = function(id) {
-        const p = products.find(x => x.id === id);
-        if(!p) return;
-        // Pega o primeiro preço das variações ou o preço base
-        const price = p.variations ? p.variations[0].p : p.p;
-        if (typeof generatePix === 'function') {
-            generatePix(price, 'Compra Direta: ' + p.name);
-        } else {
-            alert('Erro: Sistema de Pix indisponível.');
-        }
-    };
-    
-</script>
+<body>
 
     <div id="toast">Prontinho!</div>
     <div class="overlay" id="overlay" onclick="closeAll()"></div>
@@ -325,7 +312,7 @@
                 <div style="display: flex; justify-content: space-between; font-weight: 900; font-size: 1.2rem; margin-bottom: 20px;">
                     <span>Total:</span> <span id="cart-total-val" style="color: var(--primary);">R$ 0,00</span>
                 </div>
-                <button onclick="checkout()" class="btn-cart-add" style="width: 100%; padding: 18px;">FINALIZAR COMPRA (PIX)</button>
+                <button onclick="checkout()" class="btn-cart-add" style="width: 100%; padding: 18px;">FINALIZAR NO WHATSAPP</button>
             </div>
         </div>
 
@@ -353,18 +340,10 @@
         // Carrega produtos do localStorage se existirem, senão usa o padrão
         let products = JSON.parse(localStorage.getItem('pierblox_products')) || [
             {
-                id: 999,
-                name: 'TESTE PIX 20 CENTAVOS',
-                desc: 'Produto para testar o checkout automático.',
-                img: 'https://cdn-icons-png.flaticon.com/512/1554/1554401.png',
-                category: 'robux',
-                variations: [{n: 'Teste 20 Centavos', p: 0.20}]
-            },
-            {
                 id: 1,
                 name: 'ROBUX BARATO',
                 desc: 'Receba seus Robux de forma rápida e segura.',
-                img: 'https://squealing-tomato-buvummrb.edgeone.dev/75f3fefc691e37f0a8b12806125119f3.jpg',
+                img: 'https://i.ibb.co/LpYx0Xk/robux.jpg',
                 category: 'robux',
                 variations: [{n: '1.000 Robux', p: 45.00}]
             },
@@ -564,150 +543,20 @@
             setTimeout(() => t.style.display = 'none', 3000);
         }
 
-        
         function checkout() {
             if(!cart.length) return showAlert('AVISO', 'Carrinho vazio!');
-            let total = cart.reduce((s, x) => s + x.p, 0);
-            let desc = "Pedido PierBlox: " + cart.map(i => i.n).join(', ');
-            generatePix(total, desc);
-        }
-
-        window.buyItem = function(id) {
-            const p = products.find(x => x.id === id);
-            if(!p) return;
-            const price = p.variations ? p.variations[0].p : p.p;
-            generatePix(price, "Compra Direta: " + p.name);
-        };
- else {
-                alert('Erro interno: Sistema de Pix não carregado.');
+            let items = cart.map(i => `• ${i.n}`).join('\n');
+            let total = cart.reduce((s, x) => s + x.p, 0).toFixed(2);
+            if(user) {
+                let h = JSON.parse(localStorage.getItem(`h_${user.name}`)) || [];
+                h.unshift({ d: new Date().toLocaleDateString(), i: items, t: total });
+                localStorage.setItem(`h_${user.name}`, JSON.stringify(h));
             }
+            window.open(`https://wa.me/5591983326950?text=${encodeURIComponent("*PEDIDO PIERBLOX*\n\n"+items+"\n\n*TOTAL: R$ "+total+"*")}`);
         }
 
         renderProducts(); updateCartUI(); updateAuthUI();
     </script>
-
-
-
-
-
-<script>
-const MP_ACCESS_TOKEN = 'APP_USR-1598174317006783-071901-9a069520bee2070399bb41e01d5d0c6c-2373373406';
-
-async function generatePix(amount, description) {
-    if (typeof showToast === 'function') showToast('Iniciando sistema de Pix...');
-    try {
-        const payload = {
-            transaction_amount: parseFloat(amount),
-            description: description,
-            payment_method_id: 'pix',
-            payer: {
-                email: 'cliente@pierblox.com',
-                first_name: 'Cliente',
-                last_name: 'PierBlox',
-                identification: { type: 'CPF', number: '00000000000' }
-            }
-        };
-
-        // Tentativa via Proxy para evitar CORS
-        const response = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://api.mercadopago.com/v1/payments'), {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + MP_ACCESS_TOKEN,
-                'Content-Type': 'application/json',
-                'X-Idempotency-Key': 'pb_' + Math.random().toString(36).substring(2, 15)
-            },
-            body: JSON.stringify(payload)
-        });
-
-        const data = await response.json();
-        if (data.point_of_interaction) {
-            const qrCode = data.point_of_interaction.transaction_data.qr_code;
-            const qrCodeBase64 = data.point_of_interaction.transaction_data.qr_code_base64;
-            showPixModal(qrCode, qrCodeBase64, data.id);
-        } else {
-            throw new Error('Resposta incompleta do MP');
-        }
-    } catch (err) {
-        console.error('Erro Pix:', err);
-        if (typeof showToast === 'function') showToast('Erro ao conectar com Pix. Tente novamente.');
-    }
-}
-
-function showPixModal(copyPaste, qrImage, paymentId) {
-    if(document.getElementById('pix-payment-modal')) document.getElementById('pix-payment-modal').remove();
-    const modalHtml = `
-        <div id="pix-payment-modal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;font-family:sans-serif;color:white;">
-            <div style="background:#111;padding:30px;border-radius:15px;max-width:400px;width:100%;text-align:center;border:2px solid #ff00ff;box-shadow:0 0 20px #ff00ff55;">
-                <h2 style="margin-bottom:20px;">Pagamento Pix</h2>
-                <img src="data:image/png;base64,${qrImage}" style="width:200px;margin-bottom:20px;border-radius:10px;border:2px solid #333;">
-                <p style="font-size:12px;opacity:0.7;margin-bottom:10px;">Copia e Cola:</p>
-                <textarea readonly id="pix-code-area" style="width:100%;background:#222;color:#fff;border:1px solid #444;padding:10px;border-radius:5px;font-size:10px;height:60px;margin-bottom:20px;resize:none;word-break:break-all;">${copyPaste}</textarea>
-                <button onclick="copyPixCode()" id="btn-copy-pix" style="background:#ff00ff;color:white;border:none;padding:12px;width:100%;border-radius:8px;font-weight:bold;margin-bottom:10px;cursor:pointer;text-transform:uppercase;">Copiar Código</button>
-                <div id="payment-status-container" style="margin-top:15px;">
-                    <div class="spinner" style="border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #ff00ff; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px;"></div>
-                    <span id="payment-status-text" style="color:#ff00ff;font-weight:bold;">Aguardando Pagamento...</span>
-                </div>
-                <button onclick="location.reload()" style="background:transparent;color:#777;border:none;margin-top:20px;cursor:pointer;font-size:12px;">Cancelar e Voltar</button>
-            </div>
-        </div>
-        <style>
-            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        </style>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    startPaymentPolling(paymentId);
-}
-
-function copyPixCode() {
-    const area = document.getElementById('pix-code-area');
-    area.select();
-    document.execCommand('copy');
-    const btn = document.getElementById('btn-copy-pix');
-    btn.innerText = 'COPIADO!';
-    btn.style.background = '#00ff00';
-    setTimeout(() => {
-        btn.innerText = 'COPIAR CÓDIGO';
-        btn.style.background = '#ff00ff';
-    }, 2000);
-}
-
-async function startPaymentPolling(paymentId) {
-    const check = async () => {
-        try {
-            const response = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://api.mercadopago.com/v1/payments/' + paymentId), {
-                headers: { 'Authorization': 'Bearer ' + MP_ACCESS_TOKEN }
-            });
-            const data = await response.json();
-            if (data.status === 'approved') {
-                document.getElementById('payment-status-container').innerHTML = `
-                    <div style="color:#00ff00; font-size: 24px; margin-bottom: 10px;"><i class="fas fa-check-circle"></i></div>
-                    <h3 style="color:#00ff00;">PAGAMENTO APROVADO!</h3>
-                    <p style="font-size: 14px; margin-top: 10px;">Seu produto será entregue em instantes.</p>
-                `;
-                if (typeof showToast === 'function') showToast('Pagamento aprovado!');
-                return true;
-            }
-            return false;
-        } catch (e) {
-            console.error('Erro polling:', e);
-            return false;
-        }
-    };
-
-    const interval = setInterval(async () => {
-        const approved = await check();
-        if (approved) clearInterval(interval);
-    }, 5000);
-}
-</script>
 </body>
 </html>
-
-
-
-
-
-
-
-
 
