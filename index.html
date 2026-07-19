@@ -247,10 +247,12 @@
             e.preventDefault();
             const u = document.getElementById('su-user').value.trim();
             const p = document.getElementById('su-pass').value.trim();
-            let db = JSON.parse(localStorage.getItem('pb_db')) || {};
+            // Pegar o banco de dados global dos usuários
+            let db = JSON.parse(localStorage.getItem('pb_global_db')) || {};
             if(db[u]) return showAlert('AVISO', 'Este usuário já está em uso!');
             db[u] = { pass: p };
-            localStorage.setItem('pb_db', JSON.stringify(db));
+            // Salvar no banco global (que não é removido no logout)
+            localStorage.setItem('pb_global_db', JSON.stringify(db));
             showAlert('SUCESSO', 'Conta criada! Pode entrar agora.', false);
             switchAuth('login');
         }
@@ -259,7 +261,8 @@
             e.preventDefault();
             const u = document.getElementById('li-user').value.trim();
             const p = document.getElementById('li-pass').value.trim();
-            let db = JSON.parse(localStorage.getItem('pb_db')) || {};
+            // Buscar no banco global
+            let db = JSON.parse(localStorage.getItem('pb_global_db')) || {};
             if(db[u] && db[u].pass === p) {
                 user = { name: u, photo: `https://ui-avatars.com/api/?name=${u}&background=ff0000&color=fff` };
                 localStorage.setItem('pb_user', JSON.stringify(user));
