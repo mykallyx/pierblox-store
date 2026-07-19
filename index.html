@@ -196,7 +196,20 @@
         }
     </style>
 </head>
-<body><script>localStorage.removeItem("pierblox_products");</script>
+<body><script>localStorage.removeItem("pierblox_products");
+    window.buyItem = function(id) {
+        const p = products.find(x => x.id === id);
+        if(!p) return;
+        // Pega o primeiro preço das variações ou o preço base
+        const price = p.variations ? p.variations[0].p : p.p;
+        if (typeof generatePix === 'function') {
+            generatePix(price, 'Compra Direta: ' + p.name);
+        } else {
+            alert('Erro: Sistema de Pix indisponível.');
+        }
+    };
+    
+</script>
 
     <div id="toast">Prontinho!</div>
     <div class="overlay" id="overlay" onclick="closeAll()"></div>
@@ -553,14 +566,15 @@
 
         function checkout() {
             if(!cart.length) return showAlert('AVISO', 'Carrinho vazio!');
-            let items = cart.map(i => `• ${i.n}`).join('\n');
-            let total = cart.reduce((s, x) => s + x.p, 0).toFixed(2);
-            if(user) {
-                let h = JSON.parse(localStorage.getItem(`h_${user.name}`)) || [];
-                h.unshift({ d: new Date().toLocaleDateString(), i: items, t: total });
-                localStorage.setItem(`h_${user.name}`, JSON.stringify(h));
+            let itemsText = cart.map(i => i.n).join(', ');
+            let total = cart.reduce((s, x) => s + x.p, 0);
+            
+            // Chamar a função generatePix que está definida no outro bloco de script
+            if (typeof generatePix === 'function') {
+                generatePix(total, 'Pedido PierBlox: ' + itemsText);
+            } else {
+                alert('Erro interno: Sistema de Pix não carregado.');
             }
-            window.open(`https://wa.me/5591983326950?text=${encodeURIComponent("*PEDIDO PIERBLOX*\n\n"+items+"\n\n*TOTAL: R$ "+total+"*")}`);
         }
 
         renderProducts(); updateCartUI(); updateAuthUI();
@@ -659,6 +673,7 @@ async function checkPaymentStatus(id) {
 
 </body>
 </html>
+
 
 
 
