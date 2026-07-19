@@ -243,7 +243,11 @@
         animation: zapiaFadeIn 1s ease-out forwards;
     }
 
-    </style>
+    
+    * { transition-duration: 1s !important; animation-duration: 1s !important; }
+    @keyframes logoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    .logo { animation: logoFloat 10s ease-in-out infinite; display: inline-block; }
+</style>
 </head>
 <body>
 
