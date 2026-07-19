@@ -196,10 +196,7 @@
         }
     </style>
 
-<style>
-    .pix-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); z-index: 100000; display: flex; align-items: center; justify-content: center; }
-    .pix-card { background: rgba(10, 10, 10, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 40px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.7); }
-</style>
+
 </head>
 <body>
 
@@ -317,7 +314,7 @@
                 <div style="display: flex; justify-content: space-between; font-weight: 900; font-size: 1.2rem; margin-bottom: 20px;">
                     <span>Total:</span> <span id="cart-total-val" style="color: var(--primary);">R$ 0,00</span>
                 </div>
-                <button onclick="checkout()" class="btn-cart-add" style="width: 100%; padding: 18px;">FINALIZAR PEDIDO (PIX)</button>
+                <button onclick="checkout()" class="btn-cart-add" style="width: 100%; padding: 18px;">FINALIZAR NO WHATSAPP</button>
             </div>
         </div>
 
@@ -549,34 +546,19 @@
         }
 
                                 
-        async function checkout() {
+                function checkout() {
             if(!cart.length) return showAlert('AVISO', 'Carrinho vazio!');
-            const total = cart.reduce((s, x) => s + (x.price || 0), 0).toFixed(2);
-            showToast('Gerando Pix...');
-            try {
-                const response = await fetch('https://pierblox-store.vercel.app/api/pix.py', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: total })
-                });
-                const d = await response.json();
-                const qr = d.point_of_interaction.transaction_data.qr_code_base64;
-                const overlay = document.createElement('div');
-                overlay.className = 'pix-overlay';
-                overlay.id = 'pix-modal';
-                overlay.innerHTML = `<div class="pix-card"><h2 style="color:#ff3333; margin:0; font-size:1.5rem;">PIX GERADO</h2><div style="background:#fff; padding:15px; border-radius:25px; display:inline-block; margin:25px 0;"><img src="data:image/png;base64,${qr}" style="width:200px; height:200px; display:block;"></div><p id="st-txt" style="color:#fff; font-weight:bold; font-size:1.1rem;">AGUARDANDO PAGAMENTO...</p><button onclick="document.getElementById('pix-modal').remove()" style="background:rgba(255,255,255,0.05); border:none; color:#777; margin-top:20px; cursor:pointer; padding:10px 20px; border-radius:15px; width:100%;">CANCELAR</button></div>`;
-                document.body.appendChild(overlay);
-                const itv = setInterval(async () => {
-                    const ck = await fetch('https://pierblox-store.vercel.app/api/pix.py', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ payment_id: d.id })});
-                    const r = await ck.json();
-                    if(r.status === 'approved'){ 
-                        clearInterval(itv); 
-                        document.getElementById('st-txt').innerText="✅ PAGO COM SUCESSO!";
-                        document.getElementById('st-txt').style.color="#00ff00";
-                        setTimeout(()=>location.reload(), 2000); 
-                    }
-                }, 4000);
-            } catch(e) { showAlert('ERRO', 'Tente novamente em instantes'); }
+            let msg = 'Olá! Gostaria de fazer um pedido:
+
+';
+            cart.forEach(i => {
+                msg += `- ${i.name} (R$ ${i.price.toFixed(2)})
+`;
+            });
+            const total = cart.reduce((s, x) => s + x.price, 0).toFixed(2);
+            msg += `
+Total: R$ ${total}`;
+            window.open(`https://wa.me/5511993414909?text=${encodeURIComponent(msg)}`);
         }
 
 
@@ -584,6 +566,7 @@
     </script>
 </body>
 </html>
+
 
 
 
