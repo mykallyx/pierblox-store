@@ -422,10 +422,21 @@
         
         
         // Carrega produtos do localStorage se existirem, senão usa o padrão
-        let products = JSON.parse(localStorage.getItem('pierblox_products')) || [
-            {"n": "Portal Inv+God+Lvl 2800", "p": 7.0, "img": "https://i.ibb.co/m0f6w30/contas.png", "c": "bloxfruit", "d": "Portal com Invisibilidade, God Human e Level 2800. Entrega imediata."},
-            {"n": "Discord Nitro Mensal", "p": 15.0, "img": "https://i.ibb.co/m0f6w30/contas.png", "c": "contas", "d": "Ativação direta na sua conta do Discord. Mensal com todos os benefícios."},
+        let products = JSON.parse(localStorage.getItem("pierblox_products_v2")) || [
             {
+                name: 'Portal Inv+God+Lvl 2800',
+                price: 7.00,
+                img: 'https://i.ibb.co/m0f6w30/contas.png',
+                category: 'bloxfruit',
+                desc: 'Portal com Invisibilidade, God Human e Level 2800. Entrega imediata.'
+            },
+            {
+                name: 'Discord Nitro Mensal',
+                price: 15.00,
+                img: 'https://i.ibb.co/m0f6w30/contas.png',
+                category: 'contas',
+                desc: 'Ativação direta na sua conta do Discord. Mensal com todos os benefícios.'
+            },            {
                 id: 1,
                 name: 'ROBUX BARATO',
                 desc: 'Receba seus Robux de forma rápida e segura.',
