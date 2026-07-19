@@ -9,63 +9,82 @@
     <style>
         .grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr; /* Force 2 columns on mobile */
             gap: 12px;
-            padding: 15px;
-            max-width: 1200px;
+            padding: 12px;
+            max-width: 1000px;
             margin: 0 auto;
         }
         @media (min-width: 768px) {
-            .grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding: 20px; }
         }
         .card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px; /* Rounded corners */
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 15px; /* Rounded corners */
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: all 0.3s ease;
-            aspect-ratio: 14 / 16; /* Rectangular aspect ratio for the whole card */
+            transition: transform 0.2s ease;
+            height: 100%; /* Ensure all cards in a row have same height */
         }
+        .card:active { transform: scale(0.98); }
         .card img {
             width: 100%;
             aspect-ratio: 16 / 10; /* Rectangular image */
             object-fit: cover;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         .card-info {
-            padding: 12px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             flex-grow: 1;
+            gap: 4px;
         }
         .card-title {
-            font-size: 0.85rem;
-            color: #fff;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.9);
             font-weight: 500;
-            margin-bottom: 5px;
+            line-height: 1.2;
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 2.4em;
         }
         .card-price {
             color: #00ff88;
             font-size: 1.1rem;
             font-weight: 800;
+            margin: 4px 0;
         }
         .card-btn {
             background: #fff;
             color: #000;
             border: none;
-            padding: 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 700;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 800;
             text-transform: uppercase;
             cursor: pointer;
-            margin-top: 8px;
+            width: 100%;
+            margin-top: auto;
         }
+    
+        
+        @media (min-width: 768px) {
+            
+        }
+        
+        
+        
+        
+        
+        
     
         
         @media (min-width: 768px) {
