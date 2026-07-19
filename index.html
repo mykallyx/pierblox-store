@@ -497,6 +497,10 @@
 
         function openDrawer(id) {
             const p = products.find(x => x.id === id);
+            if(!p) return;
+            document.getElementById('product-modal-img').src = p.img;
+
+            const p = products.find(x => x.id === id);
             document.getElementById('d-name').innerText = p.name;
             document.getElementById('d-desc').innerText = p.desc;
             document.getElementById('variations-list').innerHTML = p.variations.map(v => `
