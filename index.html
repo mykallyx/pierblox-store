@@ -385,29 +385,10 @@
             renderProducts();
         }
 
-        
-    function renderProducts(cat = 'all') {
-        const productList = document.getElementById('product-list');
-        if (!productList) return;
-        productList.innerHTML = '';
-        const filtered = cat === 'all' ? products : products.filter(p => p.category === cat);
-        if (filtered.length === 0) {
-            productList.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: rgba(255,255,255,0.5);"><p>Sem estoque no momento</p></div>';
-            return;
-        }
-        filtered.forEach((product, index) => {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.style.animationDelay = (index * 0.1) + 's';
-            card.onclick = function() { openModal(product.id); };
-            let html = '<div class="product-image"><img src="' + product.img + '" alt="' + product.name + '"></div>';
-            html += '<div class="product-info"><h3>' + product.name + '</h3><p>' + product.desc + '</p>';
-            html += '<div class="product-price"><span>A partir de</span><strong>R$ ' + product.variations[0].p.toFixed(2).replace(".", ",") + '</strong></div></div>';
-            card.innerHTML = html;
-            productList.appendChild(card);
-        });
-    }
-)">
+        function renderProducts() {
+            const filtered = currentCategory === 'todos' ? products : products.filter(p => p.category === currentCategory);
+            document.getElementById('products-grid').innerHTML = filtered.map(p => `
+                <div class="product-card animate__animated animate__fadeInUp" onclick="openDrawer(${p.id})">
                     <div class="product-badge">🔥 Em Alta</div>
                     <div class="product-img-container" style="width: 100%; height: 150px; border-bottom: 1px solid var(--card-border); background: #1a1a1a;">
                         <img src="${p.img}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://placehold.co/400x300/1a1a1a/ffffff?text=PIERBLOX'">
@@ -482,29 +463,9 @@
             else { b.style.display = 'flex'; d.style.display = 'none'; }
         }
 
-        
-    function renderProducts(cat = 'all') {
-        const productList = document.getElementById('product-list');
-        if (!productList) return;
-        productList.innerHTML = '';
-        const filtered = cat === 'all' ? products : products.filter(p => p.category === cat);
-        if (filtered.length === 0) {
-            productList.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: rgba(255,255,255,0.5);"><p>Sem estoque no momento</p></div>';
-            return;
-        }
-        filtered.forEach((product, index) => {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.style.animationDelay = (index * 0.1) + 's';
-            card.onclick = function() { openModal(product.id); };
-            let html = '<div class="product-image"><img src="' + product.img + '" alt="' + product.name + '"></div>';
-            html += '<div class="product-info"><h3>' + product.name + '</h3><p>' + product.desc + '</p>';
-            html += '<div class="product-price"><span>A partir de</span><strong>R$ ' + product.variations[0].p.toFixed(2).replace(".", ",") + '</strong></div></div>';
-            card.innerHTML = html;
-            productList.appendChild(card);
-        });
-    }
-)">
+        function renderProducts() {
+            document.getElementById('products-grid').innerHTML = products.map(p => `
+                <div class="product-card animate__animated animate__fadeInUp" onclick="openDrawer(${p.id})">
                     <div class="product-badge">🔥 Em Alta</div>
                     <div style="width: 100%; height: 150px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border-bottom: 1px solid var(--card-border);">
                         <img src="${p.img}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; z-index: 2;">
@@ -620,8 +581,7 @@
             }
         });
         message += '*Total: R$ ' + total.toFixed(2).replace('.', ',') + '*';
-        const encodedMessage = encodeURIComponent(message);
-        window.location.href = 'https://wa.me/5591983326950?text=' + encodedMessage;
+        window.location.href = 'https://wa.me/5591983326950?text=' + encodeURIComponent(message);
     }
 ,
                     body: JSON.stringify({ amount: total, description: 'Pedido PierBlox' })
