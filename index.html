@@ -614,6 +614,21 @@
 
         renderProducts(); updateCartUI(); updateAuthUI();
     </script>
+
+<script>
+    // Força a renderização imediata e após o load
+    function forceInit() {
+        if (typeof renderProducts === 'function') {
+            console.log('Zapia: Forçando renderização...');
+            renderProducts('all');
+        } else {
+            console.error('Zapia: Função renderProducts não encontrada!');
+        }
+    }
+    forceInit();
+    window.onload = forceInit;
+    document.addEventListener('DOMContentLoaded', forceInit);
+</script>
 </body>
 </html>
 
