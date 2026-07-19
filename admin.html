@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang='pt-br'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Admin - PierBlox</title>
+    <style>
+        :root { --accent: #00ff88; --bg: #0a0a0f; }
+        body { background: var(--bg); color: white; font-family: sans-serif; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .glass-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(15px); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        .product-grid { display: grid; grid-template-columns: 70px 2fr 1fr 2fr 60px; gap: 10px; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        input { background: rgba(0,0,0,0.3); border: 1px solid #444; color: white; padding: 8px; border-radius: 5px; width: 90%; }
+        img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; }
+        .btn-save { position: fixed; bottom: 20px; right: 20px; padding: 15px 30px; background: var(--accent); color: black; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <h1>Painel Admin PierBlox 🛠️</h1>
+        <div class='glass-card'>
+            <div id='product-list'>Carregando produtos...</div>
+        </div>
+        <div class='glass-card'>
+            <h3>Novo Produto</h3>
+            <div class='product-grid'>
+                <div>✨</div>
+                <input type='text' id='nn' placeholder='Nome'>
+                <input type='number' id='np' placeholder='Preço'>
+                <input type='text' id='ni' placeholder='URL Imagem'>
+                <button onclick='add()'>+</button>
+            </div>
+        </div>
+    </div>
+    <button class='btn-save' onclick='save()'>SALVAR ✅</button>
+    <script>
+        let products = [];
+        const REPO = 'mykallyx/pierblox-store';
+        let TOKEN = localStorage.getItem('gh_token');
+        async function init() {
+            if(!TOKEN) { TOKEN = prompt('GitHub Token:'); localStorage.setItem('gh_token', TOKEN); }
+            const res = await fetch('https://api.github.com/repos/' + REPO + '/contents/index.html');
+            const data = await res.json();
+            const content = decodeURIComponent(escape(atob(data.content)));
+            const match = content.match(/let products = (\\[[\s\S]*?\\]);/);
+            if(match) { products = JSON.parse(match[1]); render(); }
+        }
+        function render() {
+            document.getElementById('product-list').innerHTML = products.map((p, i) => <div class='product-grid'>
+                <img src='" + p.img + "'>
+                <input type='text' value='" + p.name + "' onchange='products[" + i + "].name=this.value'>
+                <input type='number' value='" + p.price + "' onchange='products[" + i + "].price=Number(this.value)'>
+                <input type='text' value='" + p.img + "' onchange='products[" + i + "].img=this.value; render()'>
+                <button onclick='products.splice(" + i + ",1); render()'>X</button>
+            </div>").join('');
+        }
+        function add() {
+            products.push({name:document.getElementById('nn').value, price:Number(document.getElementById('np').value), img:document.getElementById('ni').value, cat:'bloxfruit'});
+            render();
+        }
+        async function save() {
+            const b = document.querySelector('.btn-save'); b.innerText = '...';
+            const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/index.html');
+            const d = await r.json();
+            let c = decodeURIComponent(escape(atob(d.content)));
+            c = c.replace(/let products = \\[[\s\S]*?\\];/, 'let products = ' + JSON.stringify(products, null, 4) + ';');
+            const update = await fetch('https://api.github.com/repos/' + REPO + '/contents/index.html', {
+                method: 'PUT',
+                headers: { 'Authorization': 'Bearer ' + TOKEN, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'Admin Update', content: btoa(unescape(encodeURIComponent(c))), sha: d.sha })
+            });
+            if(update.ok) alert('Loja atualizada!'); else alert('Erro!'); b.innerText = 'SALVAR ✅';
+        }
+        init();
+    </script>
+</body>
+</html>
