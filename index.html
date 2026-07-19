@@ -205,15 +205,15 @@
             </div>
             <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="filled_black" data-text="signin_with" data-size="medium" id="google-btn-real" style="display:none"></div>
             
-            <button class="google-auth-btn" id="login-btn" onclick="document.querySelector('#google-btn-real iframe').contentWindow.document.querySelector('[role=button]').click()">
+            <button class="google-auth-btn" id="login-btn" onclick="simulateLogin()">
                 <i class="fab fa-google"></i> Login
             </button>
-            <div class="logged-user" id="user-display" onclick="logout()">
+            <div class="logged-user" id="user-display" onclick="toggleSidebar()">
                 <img src="" id="user-photo">
                 <span id="user-name">Luca</span>
             </div>
             
-            <button class="btn-dots" onclick="toggleSidebar()"><i class="fas fa-shopping-cart"></i></button>
+            <button class="btn-dots" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
         </div>
     </nav>
 
@@ -428,7 +428,7 @@
         function logout() {
             user = null;
             localStorage.removeItem('pb_user');
-            google.accounts.id.disableAutoSelect();
+            if(window.google) google.accounts.id.disableAutoSelect();
             updateAuthUI();
             closeAll();
         }
