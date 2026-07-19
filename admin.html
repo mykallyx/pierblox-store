@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang='pt-br'>
+<head>
+    <meta charset='UTF-8'>
+    <title>Admin - PierBlox</title>
+    <style>
+        :root { --glass: rgba(255, 255, 255, 0.1); --accent: #ff00ff; }
+        body { background: #0f0f1a; color: white; font-family: 'Segoe UI', sans-serif; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .glass-card { background: var(--glass); backdrop-filter: blur(10px); border-radius: 15px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        h1 { text-align: center; color: var(--accent); }
+        .product-item { display: grid; grid-template-columns: 80px 1fr 100px 1fr 60px; gap: 15px; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        input { background: rgba(0,0,0,0.3); border: 1px solid #444; color: white; padding: 8px; border-radius: 5px; width: 100%; }
+        button { background: var(--accent); border: none; color: white; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .save-btn { position: fixed; bottom: 20px; right: 20px; padding: 15px 30px; font-size: 1.2rem; background: #00ff88; color: black; border: none; border-radius: 10px; cursor: pointer; }
+        img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <h1>Painel Admin PierBlox 🛠️</h1>
+        <div class='glass-card' id='product-list'>Carregando produtos...</div>
+        <div class='glass-card'>
+            <h3>Adicionar Novo Produto</h3>
+            <div class='product-item'>
+                <div>-</div>
+                <input type='text' id='new-name' placeholder='Nome'>
+                <input type='number' id='new-price' placeholder='Preço'>
+                <input type='text' id='new-img' placeholder='URL da Imagem'>
+                <button onclick='addProduct()'>+</button>
+            </div>
+        </div>
+    </div>
+    <button class='save-btn' onclick='saveChanges()'>SALVAR TUDO ✅</button>
+    <script>
+        let products = [];
+        const REPO = 'mykallyx/pierblox-store';
+        let TOKEN = localStorage.getItem('gh_token');
+
+        async function init() {
+            if(!TOKEN) {
+                TOKEN = prompt('Digite seu GitHub Token (PAT):');
+                if(TOKEN) localStorage.setItem('gh_token', TOKEN);
+            }
+            const res = await fetch('https://api.github.com/repos/' + REPO + '/contents/index.html');
+            const data = await res.json();
+            const content = decodeURIComponent(escape(atob(data.content)));
+            const match = content.match(/let products = (\[.*?\]);/s);
+            if(match) { products = JSON.parse(match[1]); render(); }
+        }
+
+        function render() {
+            const list = document.getElementById('product-list');
+            list.innerHTML = products.map((p, i) => <div class='product-item'>
+                <img src='" + p.img + "'>
+                <input type='text' value='" + p.name + "' onchange='products[" + i + "].name=this.value'>
+                <input type='number' value='" + p.price + "' onchange='products[" + i + "].price=Number(this.value)'>
+                <input type='text' value='" + p.img + "' onchange='products[" + i + "].img=this.value; render()'>
+                <button style='background:red' onclick='products.splice(" + i + ",1); render()'>X</button>
+            </div>").join('');
+        }
+
+        function addProduct() {
+            const name = document.getElementById('new-name').value;
+            const price = document.getElementById('new-price').value;
+            const img = document.getElementById('new-img').value;
+            if(!name || !price) return alert('Nome e preço obrigatórios!');
+            products.push({ name, price: Number(price), img: img || 'https://via.placeholder.com/150', cat: 'bloxfruit' });
+            render();
+        }
+
+        async function saveChanges() {
+            const btn = document.querySelector('.save-btn');
+            btn.innerText = 'SALVANDO...';
+            try {
+                const resMeta = await fetch('https://api.github.com/repos/' + REPO + '/contents/index.html');
+                const meta = await resMeta.json();
+                let content = decodeURIComponent(escape(atob(meta.content)));
+                content = content.replace(/let products = \[.*?\];/s, 'let products = ' + JSON.stringify(products, null, 4) + ';');
+                const update = await fetch('https://api.github.com/repos/' + REPO + '/contents/index.html', {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'Bearer ' + TOKEN, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: 'Admin Update', content: btoa(unescape(encodeURIComponent(content))), sha: meta.sha })
+                });
+                if(update.ok) alert('Loja atualizada!');
+                else alert('Erro ao salvar. Verifique o Token.');
+            } catch(e) { alert('Erro na conexão.'); }
+            btn.innerText = 'SALVAR TUDO ✅';
+        }
+        init();
+    </script>
+</body>
+</html>
