@@ -568,7 +568,8 @@ async function generatePix(amount, description) {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + MP_ACCESS_TOKEN,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-Idempotency-Key': 'pb_' + Math.random().toString(36).substring(2, 15)
             },
             body: JSON.stringify({
                 transaction_amount: parseFloat(amount),
@@ -665,5 +666,6 @@ window.buyItem = function(id) {
 </script>
 </body>
 </html>
+
 
 
