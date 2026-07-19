@@ -312,7 +312,7 @@
                 <div style="display: flex; justify-content: space-between; font-weight: 900; font-size: 1.2rem; margin-bottom: 20px;">
                     <span>Total:</span> <span id="cart-total-val" style="color: var(--primary);">R$ 0,00</span>
                 </div>
-                <button onclick="checkout()" class="btn-cart-add" style="width: 100%; padding: 18px;">FINALIZAR COMPRA (PIX)</button>
+                <button onclick="checkout()" class="btn-cart-add" style="width: 100%; padding: 18px;">FINALIZAR NO WHATSAPP</button>
             </div>
         </div>
 
@@ -330,110 +330,233 @@
         </div>
     </div>
 
-    
+    <script>
+        window.onload = () => { if(user) updateAuthUI(); };
+        
 
-
-
-
-
-<script>
-const MP_ACCESS_TOKEN = 'APP_USR-1598174317006783-071901-9a069520bee2070399bb41e01d5d0c6c-2373373406';
-
-async function generatePix(amount, description) {
-    console.log('Gerando Pix:', amount, description);
-    if (typeof showToast === 'function') showToast('Gerando Pix de R$ ' + amount.toFixed(2));
-    try {
-        const response = await fetch('https://api.mercadopago.com/v1/payments', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + MP_ACCESS_TOKEN,
-                'Content-Type': 'application/json'
+        
+        
+        
+        // Carrega produtos do localStorage se existirem, senão usa o padrão
+        let products = JSON.parse(localStorage.getItem('pierblox_products')) || [
+            {
+                id: 1,
+                name: 'ROBUX BARATO',
+                desc: 'Receba seus Robux de forma rápida e segura.',
+                img: 'https://squealing-tomato-buvummrb.edgeone.dev/75f3fefc691e37f0a8b12806125119f3.jpg',
+                category: 'robux',
+                variations: [{n: '1.000 Robux', p: 45.00}]
             },
-            body: JSON.stringify({
-                transaction_amount: parseFloat(amount),
-                description: description,
-                payment_method_id: 'pix',
-                payer: {
-                    email: 'cliente@pierblox.com',
-                    first_name: 'Cliente',
-                    last_name: 'PierBlox',
-                    identification: { type: 'CPF', number: '00000000000' }
-                }
-            })
-        });
-        const data = await response.json();
-        if (data.point_of_interaction) {
-            const qrCode = data.point_of_interaction.transaction_data.qr_code;
-            const qrCodeBase64 = data.point_of_interaction.transaction_data.qr_code_base64;
-            showPixModal(qrCode, qrCodeBase64, data.id);
-        } else {
-            alert('Erro ao gerar Pix. Verifique o console.');
-            console.error(data);
-        }
-    } catch (err) {
-        alert('Erro de conexão ao gerar Pix.');
-        console.error(err);
-    }
-}
-
-function showPixModal(copyPaste, qrImage, paymentId) {
-    if (document.getElementById('pix-payment-modal')) document.getElementById('pix-payment-modal').remove();
-    const modalHtml = `
-        <div id="pix-payment-modal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;font-family:sans-serif;">
-            <div style="background:#111;padding:30px;border-radius:20px;max-width:400px;width:100%;text-align:center;border:2px solid #00f2ff;box-shadow: 0 0 20px #00f2ff;">
-                <h2 style="margin-bottom:20px; color:#fff; font-weight:900;">PAGAMENTO PIX</h2>
-                <img src="data:image/png;base64,${qrImage}" style="width:220px;margin-bottom:20px;border-radius:15px; border: 5px solid #fff;">
-                <p style="font-size:14px;color:#ccc;margin-bottom:10px;">Copia e Cola:</p>
-                <textarea readonly style="width:100%;background:#222;color:#fff;border:1px solid #444;padding:12px;border-radius:10px;font-size:11px;height:70px;margin-bottom:20px;resize:none;word-break:break-all;">${copyPaste}</textarea>
-                <button onclick="navigator.clipboard.writeText('${copyPaste}'); alert('Código Copiado!')" style="background:#00f2ff;color:#000;border:none;padding:15px;width:100%;border-radius:10px;font-weight:900;margin-bottom:10px;cursor:pointer;text-transform:uppercase;">Copiar Código</button>
-                <p id="payment-status-label" style="font-size:16px;color:#00f2ff;margin-top:15px;font-weight:bold;animation: blink 1.5s infinite;">Aguardando pagamento...</p>
-                <button onclick="document.getElementById('pix-payment-modal').remove()" style="background:transparent;color:#ff4444;border:none;margin-top:20px;cursor:pointer;font-weight:bold;">CANCELAR</button>
-            </div>
-            <style>
-                @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-            </style>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
-    const checkInt = setInterval(async () => {
-        if (!document.getElementById('pix-payment-modal')) { clearInterval(checkInt); return; }
-        try {
-            const res = await fetch('https://api.mercadopago.com/v1/payments/' + paymentId, {
-                headers: { 'Authorization': 'Bearer ' + MP_ACCESS_TOKEN }
-            });
-            const d = await res.json();
-            if (d.status === 'approved') {
-                clearInterval(checkInt);
-                document.getElementById('payment-status-label').innerText = '✅ PAGO COM SUCESSO!';
-                document.getElementById('payment-status-label').style.color = '#00ff00';
-                setTimeout(() => { document.getElementById('pix-payment-modal').remove(); alert('Pagamento aprovado! Seu pedido será entregue.'); }, 3000);
+            {
+                id: 2,
+                name: 'BLOX FRUITS',
+                desc: 'As melhores frutas do jogo.',
+                img: 'https://i.ibb.co/6y4G1vX/frutas.jpg',
+                category: 'frutas',
+                variations: [{n: 'Kitsune Permanente', p: 150.00}]
             }
-        } catch(e) {}
-    }, 4000);
-}
+        ];
 
-// FUNÇÕES GLOBAIS
-window.checkout = function() {
-    console.log('Botão checkout clicado');
-    if (typeof cart === 'undefined' || cart.length === 0) {
-        alert('Seu carrinho está vazio!');
-        return;
-    }
-    const total = cart.reduce((s, i) => s + i.p, 0);
-    const names = cart.map(i => i.n).join(', ');
-    generatePix(total, 'Carrinho PierBlox: ' + names);
-};
 
-window.buyItem = function(id) {
-    console.log('Botão comprar direto clicado:', id);
-    const item = products.find(p => p.id === id);
-    if (item) {
-        generatePix(item.price, 'Compra PierBlox: ' + item.name);
-    } else {
-        alert('Produto não encontrado!');
-    }
-};
-</script>
+
+        let currentCategory = 'todos';
+
+        function filterCategory(cat, el) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const filtered = currentCategory === 'todos' ? products : products.filter(p => p.category === currentCategory);
+            document.getElementById('products-grid').innerHTML = filtered.map(p => `
+                <div class="product-card animate__animated animate__fadeInUp" onclick="openDrawer(${p.id})">
+                    <div class="product-badge">🔥 Em Alta</div>
+                    <div class="product-img-container" style="width: 100%; height: 150px; border-bottom: 1px solid var(--card-border); background: #1a1a1a;">
+                        <img src="${p.img}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://placehold.co/400x300/1a1a1a/ffffff?text=PIERBLOX'">
+                    </div>
+                    <div class="product-body">
+                        <h3 style="font-weight: 950; font-size: 1.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.name}</h3>
+                        <p style="color: var(--text-dim); font-size: 0.75rem; margin: 8px 0; line-height: 1.3; height: 32px; overflow: hidden;">${p.desc}</p>
+                        <span class="price-tag">A partir de R$ ${Math.min(...p.variations.map(v=>v.p)).toFixed(2).replace('.',',')}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        let cart = JSON.parse(localStorage.getItem('pb_cart')) || [];
+        let user = JSON.parse(localStorage.getItem('pb_user')) || null;
+
+        function showAlert(t, m, err = true) {
+            document.getElementById('alert-title').innerText = t;
+            document.getElementById('alert-msg').innerText = m;
+            document.getElementById('alert-icon').innerHTML = err ? '<i class="fas fa-times-circle"></i>' : '<i class="fas fa-check-circle"></i>';
+            document.getElementById('alert-icon').style.color = err ? '#ff0000' : '#00ff00';
+            document.getElementById('alert-modal').style.display = 'flex';
+        }
+        function closeAlert() { document.getElementById('alert-modal').style.display = 'none'; }
+
+        function openAuth() { document.getElementById('auth-modal').classList.add('active'); }
+        function closeAuth() { document.getElementById('auth-modal').classList.remove('active'); }
+        function switchAuth(m) {
+            const isL = m === 'login';
+            document.getElementById('tab-login').classList.toggle('active', isL);
+            document.getElementById('tab-signup').classList.toggle('active', !isL);
+            document.getElementById('form-login').classList.toggle('active', isL);
+            document.getElementById('form-signup').classList.toggle('active', !isL);
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            const u = document.getElementById('su-user').value.trim();
+            const p = document.getElementById('su-pass').value.trim();
+            // Pegar o banco de dados global dos usuários
+            let db = JSON.parse(localStorage.getItem('pb_global_db')) || {};
+            if(db[u]) return showAlert('AVISO', 'Este usuário já está em uso!');
+            db[u] = { pass: p };
+            // Salvar no banco global (que não é removido no logout)
+            localStorage.setItem('pb_global_db', JSON.stringify(db));
+            showAlert('SUCESSO', 'Conta criada! Pode entrar agora.', false);
+            switchAuth('login');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('li-user').value.trim();
+            const p = document.getElementById('li-pass').value.trim();
+            // Buscar no banco global
+            let db = JSON.parse(localStorage.getItem('pb_global_db')) || {};
+            if(db[u] && db[u].pass === p) {
+                user = { name: u, photo: `https://ui-avatars.com/api/?name=${u}&background=ff0000&color=fff` };
+                localStorage.setItem('pb_user', JSON.stringify(user));
+                updateAuthUI(); closeAuth(); showToast(`Bem-vindo, ${u}!`);
+            } else showAlert('ERRO', 'Usuário ou senha incorretos!');
+        }
+
+        function handleLogout() {
+            user = null; localStorage.removeItem('pb_user'); updateAuthUI(); closeAll(); showToast('Até logo!');
+        }
+
+        function updateAuthUI() {
+            const b = document.getElementById('login-btn');
+            const d = document.getElementById('user-display');
+            if(user) { b.style.display = 'none'; d.style.display = 'flex'; document.getElementById('user-photo').src = user.photo; document.getElementById('user-name').innerText = user.name; }
+            else { b.style.display = 'flex'; d.style.display = 'none'; }
+        }
+
+        function renderProducts() {
+            document.getElementById('products-grid').innerHTML = products.map(p => `
+                <div class="product-card animate__animated animate__fadeInUp" onclick="openDrawer(${p.id})">
+                    <div class="product-badge">🔥 Em Alta</div>
+                    <div style="width: 100%; height: 150px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border-bottom: 1px solid var(--card-border);">
+                        <img src="${p.img}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; z-index: 2;">
+                        <div style="color: #333; font-weight: 900; font-size: 0.8rem; text-align: center;">PIERBLOX<br><small>CARREGANDO...</small></div>
+                    </div>
+                    <div class="product-body">
+                        <h3 style="font-weight: 950; font-size: 1.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.name}</h3>
+                        <p style="color: var(--text-dim); font-size: 0.75rem; margin: 8px 0; line-height: 1.3; height: 32px; overflow: hidden;">${p.desc}</p>
+                        <span class="price-tag">A partir de R$ ${Math.min(...p.variations.map(v=>v.p)).toFixed(2).replace('.',',')}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openDrawer(id) {
+            const p = products.find(x => x.id === id);
+            document.getElementById('d-name').innerText = p.name;
+            document.getElementById('d-desc').innerText = p.desc;
+            document.getElementById('variations-list').innerHTML = p.variations.map(v => `
+                <div class="variation-card">
+                    <div><div style="font-weight: 800;">${v.n}</div><div style="color: var(--primary); font-weight: 950;">R$ ${v.p.toFixed(2).replace('.', ',')}</div></div>
+                    <button class="btn-cart-add" onclick="addToCart('${v.n}', ${v.p})">ADICIONAR</button>
+                </div>
+            `).join('');
+            document.getElementById('drawer').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function addToCart(n, p) {
+            cart.push({ n, p }); localStorage.setItem('pb_cart', JSON.stringify(cart));
+            updateCartUI(); showToast('Adicionado ao carrinho!'); closeAll();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const list = document.getElementById('cart-items-list');
+            let sum = 0;
+            if(cart.length === 0) list.innerHTML = '<p style="text-align:center; padding:50px; opacity:0.3;">Seu carrinho está vazio.</p>';
+            else {
+                list.innerHTML = cart.map((item, i) => {
+                    sum += item.p;
+                    return `<div style="display:flex; justify-content:space-between; margin-bottom:15px;"><div><b>${item.n}</b><br><small>R$ ${item.p.toFixed(2)}</small></div><i class="fas fa-trash" onclick="removeItem(${i})" style="color:#ff4444; cursor:pointer;"></i></div>`;
+                }).join('');
+            }
+            document.getElementById('cart-total-val').innerText = `R$ ${sum.toFixed(2).replace('.', ',')}`;
+        }
+
+        function removeItem(i) { cart.splice(i, 1); localStorage.setItem('pb_cart', JSON.stringify(cart)); updateCartUI(); }
+
+        function toggleSidebar() {
+            showMainMenu();
+            document.getElementById('sidebar').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function showMainMenu() {
+            document.getElementById('sidebar-title').innerText = "MENU";
+            document.getElementById('menu-section').style.display = 'flex';
+            document.getElementById('cart-section').style.display = 'none';
+            document.getElementById('profile-section').style.display = 'none';
+        }
+
+        function openCartFromMenu() {
+            document.getElementById('sidebar-title').innerText = "CARRINHO";
+            document.getElementById('menu-section').style.display = 'none';
+            document.getElementById('cart-section').style.display = 'flex';
+            document.getElementById('profile-section').style.display = 'none';
+            updateCartUI();
+        }
+
+        function openProfile() {
+            if(!user) return openAuth();
+            document.getElementById('sidebar-title').innerText = "PERFIL";
+            document.getElementById('menu-section').style.display = 'none';
+            document.getElementById('cart-section').style.display = 'none';
+            document.getElementById('profile-section').style.display = 'flex';
+            document.getElementById('profile-img-large').src = user.photo;
+            document.getElementById('profile-name-display').innerText = user.name;
+            const h = JSON.parse(localStorage.getItem(`h_${user.name}`)) || [];
+            document.getElementById('purchases-list').innerHTML = h.length ? h.map(x => `<div class="purchase-card"><small>${x.d}</small><br><b>${x.i}</b><br><span style="color:var(--primary)">R$ ${x.t}</span></div>`).join('') : '<p style="text-align:center; padding:30px; opacity:0.3;">Nenhuma compra.</p>';
+            document.getElementById('sidebar').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function closeAll() {
+            document.getElementById('drawer').classList.remove('active');
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        function showToast(m) {
+            const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+
+        function checkout() {
+            if(!cart.length) return showAlert('AVISO', 'Carrinho vazio!');
+            let items = cart.map(i => `• ${i.n}`).join('\n');
+            let total = cart.reduce((s, x) => s + x.p, 0).toFixed(2);
+            if(user) {
+                let h = JSON.parse(localStorage.getItem(`h_${user.name}`)) || [];
+                h.unshift({ d: new Date().toLocaleDateString(), i: items, t: total });
+                localStorage.setItem(`h_${user.name}`, JSON.stringify(h));
+            }
+            window.open(`https://wa.me/5591983326950?text=${encodeURIComponent("*PEDIDO PIERBLOX*\n\n"+items+"\n\n*TOTAL: R$ "+total+"*")}`);
+        }
+
+        renderProducts(); updateCartUI(); updateAuthUI();
+    </script>
 </body>
 </html>
+
