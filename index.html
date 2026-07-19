@@ -196,7 +196,7 @@
         }
     </style>
 </head>
-<body>
+<body><script>localStorage.removeItem("pierblox_products");</script>
 
     <div id="toast">Prontinho!</div>
     <div class="overlay" id="overlay" onclick="closeAll()"></div>
@@ -339,6 +339,14 @@
         
         // Carrega produtos do localStorage se existirem, senão usa o padrão
         let products = JSON.parse(localStorage.getItem('pierblox_products')) || [
+            {
+                id: 999,
+                name: 'TESTE PIX 20 CENTAVOS',
+                desc: 'Produto para testar o checkout automático.',
+                img: 'https://cdn-icons-png.flaticon.com/512/1554/1554401.png',
+                category: 'robux',
+                variations: [{n: 'Teste 20 Centavos', p: 0.20}]
+            },
             {
                 id: 1,
                 name: 'ROBUX BARATO',
@@ -592,7 +600,8 @@ async function generatePix(amount, description) {
             if (typeof showToast === 'function') showToast('Erro ao gerar Pix.');
         }
     } catch (err) {
-        if (typeof showToast === 'function') showToast('Erro na conexão.');
+        if (typeof showToast === 'function') showToast('Erro na conexão. Verifique o console.');
+        console.error('Erro detalhado:', err);
     }
 }
 
@@ -666,6 +675,7 @@ window.buyItem = function(id) {
 </script>
 </body>
 </html>
+
 
 
 
