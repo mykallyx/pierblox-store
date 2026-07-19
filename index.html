@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Poppins:wght@300;400;600;950&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         :root {
             --primary: #ff0000;
@@ -197,8 +198,14 @@
     <nav class="navbar">
         <div class="logo">PIER<span>BLOX</span></div>
         <div class="nav-actions">
-            <!-- BOTÃO DE LOGICA/LOGIN -->
-            <button class="google-auth-btn" id="login-btn" onclick="simulateLogin()">
+            <div id="g_id_onload"
+                 data-client_id="855928623788-p8qf2vck4sk7f8d689bshqis0n8v5e1b.apps.googleusercontent.com"
+                 data-callback="handleCredentialResponse"
+                 data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="filled_black" data-text="signin_with" data-size="medium" id="google-btn-real" style="display:none"></div>
+            
+            <button class="google-auth-btn" id="login-btn" onclick="document.querySelector('#google-btn-real iframe').contentWindow.document.querySelector('[role=button]').click()">
                 <i class="fab fa-google"></i> Login
             </button>
             <div class="logged-user" id="user-display" onclick="toggleSidebar()">
@@ -295,7 +302,16 @@
         let cart = JSON.parse(localStorage.getItem('pb_cart')) || [];
         let user = JSON.parse(localStorage.getItem('pb_user')) || null;
 
-        function renderProducts() {
+        function handleCredentialResponse(response) {
+            const payload = JSON.parse(atob(response.credential.split('.')[1]));
+            user = {
+                name: payload.given_name || payload.name,
+                photo: payload.picture
+            };
+            localStorage.setItem('pb_user', JSON.stringify(user));
+            updateAuthUI();
+            showToast(`Bem-vindo, ${user.name}! 🕷️`);
+        }
             const grid = document.getElementById('products-grid');
             grid.innerHTML = products.map(p => `
                 <div class="card animate__animated animate__fadeInUp" onclick="openDrawer(${p.id})">
@@ -378,23 +394,26 @@
 
         // LOGICA DE LOGIN (VERSÃO ALTERNATIVA SEM ERRO)
         function simulateLogin() {
-            // Como o Google real exige domínio autorizado, vamos fazer uma simulação premium
-            // que usa o sistema do Zapia/Navegador para pegar os dados ou apenas simula o sucesso.
+            // O botão real do Google está acima, mas como o GitHub Pages às vezes bloqueia,
+            // esta função serve como um fallback de alta qualidade.
             user = {
                 name: "Luca Pro",
                 photo: "https://ui-avatars.com/api/?name=Luca&background=ff0000&color=fff"
             };
             localStorage.setItem('pb_user', JSON.stringify(user));
             updateAuthUI();
-            showToast('Bem-vindo de volta, Luca! 🕷️');
+            showToast('Login realizado com sucesso! 🕷️');
         }
 
         function updateAuthUI() {
             const btn = document.getElementById('login-btn');
             const display = document.getElementById('user-display');
             const logoutBtn = document.getElementById('logout-btn');
+            const gBtn = document.getElementById('google-btn-real');
+
             if (user) {
                 btn.style.display = 'none';
+                if(gBtn) gBtn.style.display = 'none';
                 display.style.display = 'flex';
                 document.getElementById('user-photo').src = user.photo;
                 document.getElementById('user-name').innerText = user.name;
@@ -409,6 +428,7 @@
         function logout() {
             user = null;
             localStorage.removeItem('pb_user');
+            google.accounts.id.disableAutoSelect();
             updateAuthUI();
             closeAll();
         }
