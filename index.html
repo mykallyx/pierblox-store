@@ -75,7 +75,33 @@
             .product-img { height: 150px; }
         }
         
-        /* Modal Drawer */
+        /* Category Tabs */
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 6% 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .category-tab {
+            padding: 10px 25px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 50px;
+            color: var(--text-dim);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .category-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        .category-tabs::-webkit-scrollbar { display: none; }
         .drawer {
             position: fixed; bottom: -100%; left: 0; width: 100%; background: #0a0a0a; border-radius: 30px 30px 0 0;
             padding: 40px 6%; z-index: 2000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-top: 1px solid var(--card-border);
@@ -216,6 +242,13 @@
         <p style="color: var(--text-dim); max-width: 600px; margin: 0 auto;">Produtos exclusivos de Roblox (Blox Fruits, Robux e mais) com entrega imediata e suporte 24h.</p>
     </header>
 
+    <div class="category-tabs" id="category-tabs">
+        <div class="category-tab active" onclick="filterCategory('todos', this)">Todos</div>
+        <div class="category-tab" onclick="filterCategory('robux', this)">Robux</div>
+        <div class="category-tab" onclick="filterCategory('frutas', this)">Frutas</div>
+        <div class="category-tab" onclick="filterCategory('contas', this)">Contas</div>
+    </div>
+
     <main class="products-container" id="products-grid"></main>
 
     <div class="floating-cart" onclick="toggleSidebar()">
@@ -289,6 +322,7 @@
             { 
                 id: 1, 
                 name: "ROBUX BARATO", 
+                category: "robux",
                 img: "https://i.pinimg.com/736x/8a/7e/1a/8a7e1a383d474582e3c0382d61993466.jpg",
                 desc: "Entrega via Gamepass ou Grupo. O melhor custo-benefício para turbinar sua conta.", 
                 variations: [{n: "1.000 Robux", p: 45.00}, {n: "5.000 Robux", p: 210.00}] 
@@ -296,6 +330,7 @@
             { 
                 id: 2, 
                 name: "BLOX FRUITS", 
+                category: "frutas",
                 img: "https://i.pinimg.com/736x/01/f4/1e/01f41e57c61793750058b753697e887e.jpg",
                 desc: "Frutas permanentes e itens míticos. Domine os mares com os melhores poderes.", 
                 variations: [{n: "Kitsune (Perm)", p: 120.00}, {n: "Leopard (Perm)", p: 95.00}] 
@@ -303,11 +338,36 @@
             { 
                 id: 3, 
                 name: "CONTAS UPADAS", 
+                category: "contas",
                 img: "https://i.pinimg.com/736x/f8/f4/1e/f8f41e57c61793750058b753697e887e.jpg",
                 desc: "Contas Level Max com itens raros e espadas míticas prontas para o PvP.", 
                 variations: [{n: "Level Max + CDK", p: 60.00}, {n: "GodHuman Account", p: 85.00}] 
             }
         ];
+
+        let currentCategory = 'todos';
+
+        function filterCategory(cat, el) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const filtered = currentCategory === 'todos' ? products : products.filter(p => p.category === currentCategory);
+            document.getElementById('products-grid').innerHTML = filtered.map(p => `
+                <div class="product-card animate__animated animate__fadeInUp" onclick="openDrawer(${p.id})">
+                    <div class="product-badge">🔥 Em Alta</div>
+                    <img src="${p.img}" alt="${p.name}" class="product-img">
+                    <div class="product-body">
+                        <h3 style="font-weight: 950; font-size: 1.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.name}</h3>
+                        <p style="color: var(--text-dim); font-size: 0.75rem; margin: 8px 0; line-height: 1.3; height: 32px; overflow: hidden;">${p.desc}</p>
+                        <span class="price-tag">A partir de R$ ${Math.min(...p.variations.map(v=>v.p)).toFixed(2).replace('.',',')}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
 
         let cart = JSON.parse(localStorage.getItem('pb_cart')) || [];
         let user = JSON.parse(localStorage.getItem('pb_user')) || null;
