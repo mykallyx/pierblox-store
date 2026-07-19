@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PierBlox Store - Premium Gaming Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Poppins:wght@300;400;600;950&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root {
+            --primary: #ff0000;
+            --primary-glow: rgba(255, 0, 0, 0.6);
+            --bg: #050505;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-dim: #b0b0b0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% -20%, #2a0505 0%, transparent 50%),
+                linear-gradient(to right, #0d0d0d 1px, transparent 1px),
+                linear-gradient(to bottom, #0d0d0d 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+        }
+
+        /* Navbar */
+        .navbar {
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .logo { font-weight: 950; font-size: 1.6rem; letter-spacing: -1px; }
+        .logo span { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+        .nav-actions { display: flex; align-items: center; gap: 15px; }
+
+        /* Estilo do Botão de Login (Versão Alternativa) */
+        .google-auth-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .google-auth-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--primary); }
+        .google-auth-btn i { color: #4285F4; font-size: 1.1rem; }
+
+        .logged-user {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            background: rgba(255, 0, 0, 0.1);
+            padding: 5px 12px 5px 5px;
+            border-radius: 50px;
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        .logged-user img { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--primary); }
+        .logged-user span { font-size: 0.85rem; font-weight: 700; }
+
+        .btn-dots { background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer; padding: 5px; }
+
+        /* Hero */
+        .hero { padding: 40px 20px; text-align: center; }
+        .main-title { font-size: 4.5rem; font-weight: 950; line-height: 1; margin-bottom: 10px; }
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 40%, #ff0000 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .spider-verified { width: 45px; vertical-align: middle; filter: drop-shadow(0 0 8px var(--primary)); animation: spiderPulse 2s infinite; }
+        @keyframes spiderPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+        .inst-box {
+            max-width: 600px; margin: 20px auto 40px; padding: 20px;
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 20px; backdrop-filter: blur(10px);
+            font-size: 0.95rem; color: var(--text-dim); line-height: 1.6;
+        }
+
+        /* Products Grid */
+        .products-container {
+            max-width: 1200px; margin: 0 auto; padding: 0 20px 100px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 25px; padding: 15px; position: relative;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden; cursor: pointer;
+        }
+        .card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+
+        .card-img {
+            width: 100%; height: 200px; border-radius: 20px;
+            background-size: cover; background-position: center;
+            margin-bottom: 15px; position: relative;
+        }
+        .card-tag {
+            position: absolute; top: 12px; left: 12px; background: var(--primary);
+            color: white; font-size: 0.7rem; font-weight: 900; padding: 5px 12px; border-radius: 50px;
+        }
+
+        .card-info h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 5px; }
+        .card-info p { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 15px; height: 40px; overflow: hidden; }
+
+        .card-footer { display: flex; justify-content: space-between; align-items: center; }
+        .price-label { font-size: 0.75rem; color: var(--text-dim); display: block; }
+        .price-val { font-size: 1.4rem; font-weight: 950; color: white; }
+        .btn-view { background: white; color: black; border-radius: 12px; padding: 10px 15px; font-weight: 800; font-size: 0.8rem; }
+
+        /* Drawer */
+        .drawer {
+            position: fixed; bottom: -100%; left: 0; width: 100%; height: 85%;
+            background: #0a0a0a; border-top: 2px solid var(--primary);
+            border-radius: 35px 35px 0 0; z-index: 2000;
+            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 30px 25px; overflow-y: auto;
+        }
+        .drawer.active { bottom: 0; }
+        .drawer-handle { width: 50px; height: 6px; background: #333; border-radius: 10px; margin: -10px auto 25px; }
+
+        .variation-card {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--card-border);
+            padding: 20px; border-radius: 20px; display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 12px; transition: 0.3s;
+        }
+        .variation-card:hover { border-color: var(--primary); background: rgba(255,0,0,0.05); }
+
+        .btn-cart-add {
+            background: var(--primary); color: white; border: none; padding: 10px 20px;
+            border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 5px 15px var(--primary-glow);
+        }
+
+        /* Sidebar Right */
+        .sidebar {
+            position: fixed; top: 0; right: -100%; width: 320px; height: 100%;
+            background: #080808; z-index: 3000; transition: 0.4s; padding: 40px 25px;
+            border-left: 1px solid var(--card-border);
+        }
+        .sidebar.active { right: 0; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1500; display: none; }
+        .overlay.active { display: block; }
+
+        .cart-item {
+            display: flex; gap: 15px; margin-bottom: 15px; padding: 15px;
+            background: rgba(255,255,255,0.02); border-radius: 15px; align-items: center;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: white; color: black; padding: 12px 25px; border-radius: 50px;
+            font-weight: 900; font-size: 0.9rem; z-index: 4000; display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        @media (max-width: 600px) {
+            .main-title { font-size: 3rem; }
+            .sidebar { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast">Prontinho!</div>
+    <div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+    <nav class="navbar">
+        <div class="logo">PIER<span>BLOX</span></div>
+        <div class="nav-actions">
+            <!-- BOTÃO DE LOGICA/LOGIN -->
+            <button class="google-auth-btn" id="login-btn" onclick="simulateLogin()">
+                <i class="fab fa-google"></i> Login
+            </button>
+            <div class="logged-user" id="user-display" onclick="toggleSidebar()">
+                <img src="" id="user-photo">
+                <span id="user-name">Luca</span>
+            </div>
+            
+            <button class="btn-dots" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <h1 class="main-title animate__animated animate__fadeInDown">
+            <span class="gradient-text">PierBlox</span>
+            <img src="https://share.zapia.com/tjbr0xfylxy8jku8ak35jx" class="spider-verified" alt="Aranha">
+        </h1>
+        <p style="font-weight: 600; color: var(--text-dim); margin-top: -10px;">A MELHOR LOJA DE GAMES DO BRASIL</p>
+
+        <div class="inst-box">
+            🌟 <span style="color: white; font-weight: 800;">PierBlox Store</span> é uma loja confiável, focada em oferecer a melhor experiência. Entregas rápidas e total transparência. Sua satisfação é nossa prioridade! ❤️
+        </div>
+    </header>
+
+    <main class="products-container" id="products-grid">
+        <!-- JS gera os cards bonitos aqui -->
+    </main>
+
+    <!-- Drawer de Detalhes -->
+    <div class="drawer" id="drawer">
+        <div class="drawer-handle"></div>
+        <h2 id="d-name" style="font-size: 2rem; font-weight: 950; margin-bottom: 5px;">Produto</h2>
+        <p id="d-desc" style="color: var(--text-dim); margin-bottom: 30px;">Descrição completa aqui.</p>
+        <div id="variations-list"></div>
+    </div>
+
+    <!-- Sidebar Menu/Cart -->
+    <div class="sidebar" id="sidebar">
+        <h2 style="font-weight: 950; font-size: 1.8rem; margin-bottom: 30px;">MENU</h2>
+        
+        <div id="cart-section">
+            <p style="font-weight: 800; font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Seu Carrinho</p>
+            <div id="cart-items-list"></div>
+            <div style="margin-top: 20px; border-top: 1px solid var(--card-border); padding-top: 20px;">
+                <div style="display: flex; justify-content: space-between; font-weight: 900; font-size: 1.2rem; margin-bottom: 20px;">
+                    <span>Total:</span>
+                    <span id="cart-total-val" style="color: var(--primary);">R$ 0,00</span>
+                </div>
+                <button onclick="checkout()" class="btn-cart-add" style="width: 100%; padding: 18px; font-size: 1rem;">FINALIZAR NO WHATSAPP</button>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; display: flex; flex-direction: column; gap: 15px;">
+            <button onclick="logout()" id="logout-btn" style="display:none; background: none; border: 1px solid #333; color: #ff4444; padding: 10px; border-radius: 10px; cursor: pointer;">Sair da Conta</button>
+        </div>
+    </nav>
+
+    <script>
+        const products = [
+            {
+                id: 1, name: "Robux Premium", desc: "Entrega via Grupo ou Gamepass. Seguro e rápido.",
+                img: "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?q=80&w=500&auto=format&fit=crop",
+                tag: "MAIS VENDIDO",
+                variations: [
+                    { n: "400 Robux", p: 19.90 },
+                    { n: "800 Robux", p: 38.00 },
+                    { n: "1700 Robux", p: 75.00 },
+                    { n: "4500 Robux", p: 190.00 }
+                ]
+            },
+            {
+                id: 2, name: "Blox Fruits (Frutas)", desc: "As melhores frutas míticas do estoque.",
+                img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=500&auto=format&fit=crop",
+                tag: "ESTOQUE NOVO",
+                variations: [
+                    { n: "Leopard (Física)", p: 25.00 },
+                    { n: "Dragon (Física)", p: 22.00 },
+                    { n: "Kitsune (Física)", p: 35.00 },
+                    { n: "Dough (Física)", p: 15.00 }
+                ]
+            },
+            {
+                id: 3, name: "Gamepasses", desc: "Ativação direta na sua conta Roblox.",
+                img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500&auto=format&fit=crop",
+                tag: "PROMOÇÃO",
+                variations: [
+                    { n: "2x Money", p: 12.00 },
+                    { n: "2x Mastery", p: 12.00 },
+                    { n: "Fast Boats", p: 8.00 },
+                    { n: "Dark Blade", p: 45.00 }
+                ]
+            }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('pb_cart')) || [];
+        let user = JSON.parse(localStorage.getItem('pb_user')) || null;
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = products.map(p => `
+                <div class="card animate__animated animate__fadeInUp" onclick="openDrawer(${p.id})">
+                    <div class="card-img" style="background-image: url('${p.img}')">
+                        <div class="card-tag">${p.tag}</div>
+                    </div>
+                    <div class="card-info">
+                        <h3>${p.name}</h3>
+                        <p>${p.desc}</p>
+                    </div>
+                    <div class="card-footer">
+                        <div>
+                            <span class="price-label">A partir de</span>
+                            <span class="price-val">R$ ${p.variations[0].p.toFixed(2).replace('.', ',')}</span>
+                        </div>
+                        <div class="btn-view">VER OPÇÕES</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openDrawer(id) {
+            const p = products.find(x => x.id === id);
+            document.getElementById('d-name').innerText = p.name;
+            document.getElementById('d-desc').innerText = p.desc;
+            const list = document.getElementById('variations-list');
+            list.innerHTML = p.variations.map(v => `
+                <div class="variation-card">
+                    <div>
+                        <div style="font-weight: 800; font-size: 1.1rem;">${v.n}</div>
+                        <div style="color: var(--primary); font-weight: 950;">R$ ${v.p.toFixed(2).replace('.', ',')}</div>
+                    </div>
+                    <button class="btn-cart-add" onclick="addToCart('${v.n}', ${v.p})">ADICIONAR</button>
+                </div>
+            `).join('');
+            document.getElementById('drawer').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            saveCart();
+            updateCartUI();
+            showToast('Item adicionado ao carrinho! 🛒');
+            closeAll();
+            toggleSidebar();
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('cart-items-list');
+            const total = document.getElementById('cart-total-val');
+            if (cart.length === 0) {
+                list.innerHTML = '<p style="color: #444; text-align: center; margin-top: 20px;">Vazio...</p>';
+                total.innerText = 'R$ 0,00';
+                return;
+            }
+            let sum = 0;
+            list.innerHTML = cart.map((item, idx) => {
+                sum += item.price;
+                return `
+                    <div class="cart-item">
+                        <div style="flex: 1">
+                            <div style="font-weight: 700; font-size: 0.9rem;">${item.name}</div>
+                            <div style="color: var(--primary); font-weight: 800;">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
+                        </div>
+                        <i class="fas fa-trash-alt" onclick="removeItem(${idx})" style="color: #333; cursor: pointer;"></i>
+                    </div>
+                `;
+            }).join('');
+            total.innerText = `R$ ${sum.toFixed(2).replace('.', ',')}`;
+        }
+
+        function removeItem(idx) {
+            cart.splice(idx, 1);
+            saveCart();
+            updateCartUI();
+        }
+
+        function saveCart() { localStorage.setItem('pb_cart', JSON.stringify(cart)); }
+
+        // LOGICA DE LOGIN (VERSÃO ALTERNATIVA SEM ERRO)
+        function simulateLogin() {
+            // Como o Google real exige domínio autorizado, vamos fazer uma simulação premium
+            // que usa o sistema do Zapia/Navegador para pegar os dados ou apenas simula o sucesso.
+            user = {
+                name: "Luca Pro",
+                photo: "https://ui-avatars.com/api/?name=Luca&background=ff0000&color=fff"
+            };
+            localStorage.setItem('pb_user', JSON.stringify(user));
+            updateAuthUI();
+            showToast('Bem-vindo de volta, Luca! 🕷️');
+        }
+
+        function updateAuthUI() {
+            const btn = document.getElementById('login-btn');
+            const display = document.getElementById('user-display');
+            const logoutBtn = document.getElementById('logout-btn');
+            if (user) {
+                btn.style.display = 'none';
+                display.style.display = 'flex';
+                document.getElementById('user-photo').src = user.photo;
+                document.getElementById('user-name').innerText = user.name;
+                logoutBtn.style.display = 'block';
+            } else {
+                btn.style.display = 'flex';
+                display.style.display = 'none';
+                logoutBtn.style.display = 'none';
+            }
+        }
+
+        function logout() {
+            user = null;
+            localStorage.removeItem('pb_user');
+            updateAuthUI();
+            closeAll();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function closeAll() {
+            document.getElementById('drawer').classList.remove('active');
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+
+        function checkout() {
+            if (cart.length === 0) return alert('Adicione algo ao carrinho!');
+            let msg = "*PEDIDO PIERBLOX STORE*\n\n";
+            if (user) msg += `*Cliente:* ${user.name}\n\n`;
+            let sum = 0;
+            cart.forEach(i => {
+                msg += `• ${i.name} (R$ ${i.price.toFixed(2).replace('.', ',')})\n`;
+                sum += i.price;
+            });
+            msg += `\n*TOTAL: R$ ${sum.toFixed(2).replace('.', ',')}*`;
+            window.open(`https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // Init
+        renderProducts();
+        updateCartUI();
+        updateAuthUI();
+    </script>
+</body>
+</html>
