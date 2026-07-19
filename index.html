@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PierBlox Store - Premium Gaming Store</title>
+    <title>PierBlox - Premium Gaming Store</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Poppins:wght@300;400;600;950&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -22,7 +22,11 @@
 
         body {
             background-color: var(--bg); color: var(--text-main); font-family: 'Poppins', sans-serif; overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% -20%, #200000 0%, transparent 50%);
+            background-image: 
+                radial-gradient(circle at 50% -20%, #400000 0%, transparent 50%),
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
         }
 
         .navbar {
@@ -46,13 +50,17 @@
         .main-title { font-size: 5rem; font-weight: 950; line-height: 1; letter-spacing: -3px; margin-bottom: 15px; }
         .main-title span { color: var(--primary); text-shadow: 0 0 20px var(--primary-glow); }
 
-        .products-container { padding: 40px 6%; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .products-container { padding: 40px 6%; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
         .product-card { 
-            background: var(--card-bg); border: 1px solid var(--card-border); padding: 25px; border-radius: 30px;
+            background: var(--card-bg); border: 1px solid var(--card-border); padding: 0; border-radius: 25px;
             transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; backdrop-filter: blur(10px);
         }
-        .product-card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 0 10px 30px rgba(255,0,0,0.1); }
-        .price-tag { color: var(--primary); font-weight: 950; font-size: 1.5rem; margin-top: 15px; display: block; }
+        .product-card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 0 15px 40px rgba(255,0,0,0.15); }
+        .product-img { width: 100%; height: 200px; object-fit: cover; border-bottom: 1px solid var(--card-border); }
+        .product-body { padding: 25px; }
+        .product-badge { position: absolute; top: 15px; right: 15px; background: var(--primary); color: white; padding: 6px 15px; border-radius: 50px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+        .price-tag { color: var(--primary); font-weight: 950; font-size: 1.6rem; margin-top: 10px; display: block; }
         
         /* Modal Drawer */
         .drawer {
@@ -265,8 +273,27 @@
 
     <script>
         const products = [
-            { id: 1, name: "ROBUX BARATO", desc: "Entrega rápida via Gamepass ou Grupo. O melhor preço do mercado!", variations: [{n: "1.000 Robux", p: 45.00}, {n: "5.000 Robux", p: 210.00}] },
-            { id: 2, name: "BLOX FRUITS", desc: "Frutas permanentes e itens míticos para sua conta ser a melhor.", variations: [{n: "Kitsune (Perm)", p: 120.00}, {n: "Leopard (Perm)", p: 95.00}, {n: "Dark Blade", p: 40.00}] }
+            { 
+                id: 1, 
+                name: "ROBUX BARATO", 
+                img: "https://i.pinimg.com/736x/8a/7e/1a/8a7e1a383d474582e3c0382d61993466.jpg",
+                desc: "Entrega via Gamepass ou Grupo. O melhor custo-benefício para turbinar sua conta.", 
+                variations: [{n: "1.000 Robux", p: 45.00}, {n: "5.000 Robux", p: 210.00}] 
+            },
+            { 
+                id: 2, 
+                name: "BLOX FRUITS", 
+                img: "https://i.pinimg.com/736x/01/f4/1e/01f41e57c61793750058b753697e887e.jpg",
+                desc: "Frutas permanentes e itens míticos. Domine os mares com os melhores poderes.", 
+                variations: [{n: "Kitsune (Perm)", p: 120.00}, {n: "Leopard (Perm)", p: 95.00}] 
+            },
+            { 
+                id: 3, 
+                name: "CONTAS UPADAS", 
+                img: "https://i.pinimg.com/736x/f8/f4/1e/f8f41e57c61793750058b753697e887e.jpg",
+                desc: "Contas Level Max com itens raros e espadas míticas prontas para o PvP.", 
+                variations: [{n: "Level Max + CDK", p: 60.00}, {n: "GodHuman Account", p: 85.00}] 
+            }
         ];
 
         let cart = JSON.parse(localStorage.getItem('pb_cart')) || [];
@@ -332,9 +359,13 @@
         function renderProducts() {
             document.getElementById('products-grid').innerHTML = products.map(p => `
                 <div class="product-card animate__animated animate__fadeInUp" onclick="openDrawer(${p.id})">
-                    <h3 style="font-weight: 900;">${p.name}</h3>
-                    <p style="color: var(--text-dim); font-size: 0.8rem; margin: 10px 0;">${p.desc}</p>
-                    <span class="price-tag">A partir de R$ ${Math.min(...p.variations.map(v=>v.p)).toFixed(2).replace('.',',')}</span>
+                    <div class="product-badge">🔥 Em Alta</div>
+                    <img src="${p.img}" alt="${p.name}" class="product-img">
+                    <div class="product-body">
+                        <h3 style="font-weight: 950; font-size: 1.4rem;">${p.name}</h3>
+                        <p style="color: var(--text-dim); font-size: 0.85rem; margin: 12px 0; line-height: 1.4;">${p.desc}</p>
+                        <span class="price-tag">A partir de R$ ${Math.min(...p.variations.map(v=>v.p)).toFixed(2).replace('.',',')}</span>
+                    </div>
                 </div>
             `).join('');
         }
