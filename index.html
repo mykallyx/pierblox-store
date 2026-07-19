@@ -565,23 +565,24 @@
                 async 
     function checkout() {
         if (cart.length === 0) return;
+        let message = 'Olá, gostaria de finalizar meu pedido:
 
-        let message = "Olá, gostaria de finalizar meu pedido:
-
-";
+';
         let total = 0;
-
         cart.forEach(item => {
             const p = products.find(prod => prod.id === item.id);
-            message += ;
-            message += ;
-            total += item.price * item.quantity;
-        });
+            if(p) {
+                message += '*' + p.name + '* - ' + item.variation + '
+';
+                message += 'Qtd: ' + item.quantity + ' - R$ ' + (item.price * item.quantity).toFixed(2).replace('.', ',') + '
 
-        message += ;
-        
+';
+                total += item.price * item.quantity;
+            }
+        });
+        message += '*Total: R$ ' + total.toFixed(2).replace('.', ',') + '*';
         const encodedMessage = encodeURIComponent(message);
-        window.location.href = ;
+        window.location.href = 'https://wa.me/5591983326950?text=' + encodedMessage;
     }
 ,
                     body: JSON.stringify({ amount: total, description: 'Pedido PierBlox' })
