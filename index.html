@@ -52,7 +52,6 @@
 
         .nav-actions { display: flex; align-items: center; gap: 15px; }
 
-        /* Estilo do Botão de Login (Versão Alternativa) */
         .google-auth-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--card-border);
@@ -85,6 +84,44 @@
         .logged-user span { font-size: 0.85rem; font-weight: 700; }
 
         .btn-dots { background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer; padding: 5px; }
+
+        /* Floating Cart Button (Fluffy Style) */
+        .floating-cart {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: var(--primary);
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 2500;
+            box-shadow: 0 10px 30px var(--primary-glow);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        .floating-cart:hover { transform: scale(1.1) rotate(-5deg); }
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: white;
+            color: black;
+            font-size: 0.8rem;
+            font-weight: 900;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid var(--primary);
+        }
 
         /* Hero */
         .hero { padding: 40px 20px; text-align: center; }
@@ -138,7 +175,7 @@
         .price-val { font-size: 1.4rem; font-weight: 950; color: white; }
         .btn-view { background: white; color: black; border-radius: 12px; padding: 10px 15px; font-weight: 800; font-size: 0.8rem; }
 
-        /* Drawer */
+        /* Drawer (Details) */
         .drawer {
             position: fixed; bottom: -100%; left: 0; width: 100%; height: 85%;
             background: #0a0a0a; border-top: 2px solid var(--primary);
@@ -161,11 +198,11 @@
             border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 5px 15px var(--primary-glow);
         }
 
-        /* Sidebar Right */
+        /* Sidebar Right (Menu & Cart) */
         .sidebar {
-            position: fixed; top: 0; right: -100%; width: 320px; height: 100%;
+            position: fixed; top: 0; right: -100%; width: 350px; height: 100%;
             background: #080808; z-index: 3000; transition: 0.4s; padding: 40px 25px;
-            border-left: 1px solid var(--card-border);
+            border-left: 1px solid var(--card-border); display: flex; flex-direction: column;
         }
         .sidebar.active { right: 0; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1500; display: none; }
@@ -198,13 +235,6 @@
     <nav class="navbar">
         <div class="logo">PIER<span>BLOX</span></div>
         <div class="nav-actions">
-            <div id="g_id_onload"
-                 data-client_id="855928623788-p8qf2vck4sk7f8d689bshqis0n8v5e1b.apps.googleusercontent.com"
-                 data-callback="handleCredentialResponse"
-                 data-auto_prompt="false">
-            </div>
-            <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="filled_black" data-text="signin_with" data-size="medium" id="google-btn-real" style="display:none"></div>
-            
             <button class="google-auth-btn" id="login-btn" onclick="simulateLogin()">
                 <i class="fab fa-google"></i> Login
             </button>
@@ -212,10 +242,14 @@
                 <img src="" id="user-photo">
                 <span id="user-name">Luca</span>
             </div>
-            
             <button class="btn-dots" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
         </div>
     </nav>
+
+    <div class="floating-cart" onclick="toggleSidebar()">
+        <i class="fas fa-shopping-basket"></i>
+        <div class="cart-count" id="cart-count-badge">0</div>
+    </div>
 
     <header class="hero">
         <h1 class="main-title animate__animated animate__fadeInDown">
@@ -225,15 +259,12 @@
         <p style="font-weight: 600; color: var(--text-dim); margin-top: -10px;">A MELHOR LOJA DE GAMES DO BRASIL</p>
 
         <div class="inst-box">
-            🌟 <span style="color: white; font-weight: 800;">PierBlox Store</span> é uma loja confiável, focada em oferecer a melhor experiência. Entregas rápidas e total transparência. Sua satisfação é nossa prioridade! ❤️
+            🌟 <span style="color: white; font-weight: 800;">PierBlox Store</span> é uma loja confiável. Entregas rápidas e total transparência. Sua satisfação é nossa prioridade! ❤️
         </div>
     </header>
 
-    <main class="products-container" id="products-grid">
-        <!-- JS gera os cards bonitos aqui -->
-    </main>
+    <main class="products-container" id="products-grid"></main>
 
-    <!-- Drawer de Detalhes -->
     <div class="drawer" id="drawer">
         <div class="drawer-handle"></div>
         <h2 id="d-name" style="font-size: 2rem; font-weight: 950; margin-bottom: 5px;">Produto</h2>
@@ -241,26 +272,26 @@
         <div id="variations-list"></div>
     </div>
 
-    <!-- Sidebar Menu/Cart -->
     <div class="sidebar" id="sidebar">
-        <h2 style="font-weight: 950; font-size: 1.8rem; margin-bottom: 30px;">MENU</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h2 style="font-weight: 950; font-size: 1.8rem;">MENU</h2>
+            <i class="fas fa-times" onclick="closeAll()" style="font-size: 1.5rem; cursor: pointer;"></i>
+        </div>
         
-        <div id="cart-section">
+        <div id="cart-section" style="flex: 1; overflow-y: auto;">
             <p style="font-weight: 800; font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Seu Carrinho</p>
             <div id="cart-items-list"></div>
-            <div style="margin-top: 20px; border-top: 1px solid var(--card-border); padding-top: 20px;">
-                <div style="display: flex; justify-content: space-between; font-weight: 900; font-size: 1.2rem; margin-bottom: 20px;">
-                    <span>Total:</span>
-                    <span id="cart-total-val" style="color: var(--primary);">R$ 0,00</span>
-                </div>
-                <button onclick="checkout()" class="btn-cart-add" style="width: 100%; padding: 18px; font-size: 1rem;">FINALIZAR NO WHATSAPP</button>
-            </div>
         </div>
 
-        <div style="margin-top: 40px; display: flex; flex-direction: column; gap: 15px;">
-            <button onclick="logout()" id="logout-btn" style="display:none; background: none; border: 1px solid #333; color: #ff4444; padding: 10px; border-radius: 10px; cursor: pointer;">Sair da Conta</button>
+        <div style="margin-top: 20px; border-top: 1px solid var(--card-border); padding-top: 20px;">
+            <div style="display: flex; justify-content: space-between; font-weight: 900; font-size: 1.2rem; margin-bottom: 20px;">
+                <span>Total:</span>
+                <span id="cart-total-val" style="color: var(--primary);">R$ 0,00</span>
+            </div>
+            <button onclick="checkout()" class="btn-cart-add" style="width: 100%; padding: 18px; font-size: 1rem;">FINALIZAR NO WHATSAPP</button>
+            <button onclick="logout()" id="logout-btn" style="display:none; width: 100%; background: none; border: 1px solid #333; color: #ff4444; padding: 12px; border-radius: 12px; cursor: pointer; margin-top: 15px; font-weight: 700;">Sair da Conta</button>
         </div>
-    </nav>
+    </div>
 
     <script>
         const products = [
@@ -269,21 +300,15 @@
                 img: "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?q=80&w=500&auto=format&fit=crop",
                 tag: "MAIS VENDIDO",
                 variations: [
-                    { n: "400 Robux", p: 19.90 },
-                    { n: "800 Robux", p: 38.00 },
-                    { n: "1700 Robux", p: 75.00 },
-                    { n: "4500 Robux", p: 190.00 }
+                    { n: "400 Robux", p: 19.90 }, { n: "800 Robux", p: 38.00 }, { n: "1700 Robux", p: 75.00 }, { n: "4500 Robux", p: 190.00 }
                 ]
             },
             {
-                id: 2, name: "Blox Fruits (Frutas)", desc: "As melhores frutas míticas do estoque.",
+                id: 2, name: "Blox Fruits", desc: "As melhores frutas míticas do estoque.",
                 img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=500&auto=format&fit=crop",
                 tag: "ESTOQUE NOVO",
                 variations: [
-                    { n: "Leopard (Física)", p: 25.00 },
-                    { n: "Dragon (Física)", p: 22.00 },
-                    { n: "Kitsune (Física)", p: 35.00 },
-                    { n: "Dough (Física)", p: 15.00 }
+                    { n: "Leopard (Física)", p: 25.00 }, { n: "Dragon (Física)", p: 22.00 }, { n: "Kitsune (Física)", p: 35.00 }, { n: "Dough (Física)", p: 15.00 }
                 ]
             },
             {
@@ -291,10 +316,7 @@
                 img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500&auto=format&fit=crop",
                 tag: "PROMOÇÃO",
                 variations: [
-                    { n: "2x Money", p: 12.00 },
-                    { n: "2x Mastery", p: 12.00 },
-                    { n: "Fast Boats", p: 8.00 },
-                    { n: "Dark Blade", p: 45.00 }
+                    { n: "2x Money", p: 12.00 }, { n: "2x Mastery", p: 12.00 }, { n: "Fast Boats", p: 8.00 }, { n: "Dark Blade", p: 45.00 }
                 ]
             }
         ];
@@ -302,32 +324,14 @@
         let cart = JSON.parse(localStorage.getItem('pb_cart')) || [];
         let user = JSON.parse(localStorage.getItem('pb_user')) || null;
 
-        function handleCredentialResponse(response) {
-            const payload = JSON.parse(atob(response.credential.split('.')[1]));
-            user = {
-                name: payload.given_name || payload.name,
-                photo: payload.picture
-            };
-            localStorage.setItem('pb_user', JSON.stringify(user));
-            updateAuthUI();
-            showToast(`Bem-vindo, ${user.name}! 🕷️`);
-        }
         function renderProducts() {
             const grid = document.getElementById('products-grid');
             grid.innerHTML = products.map(p => `
                 <div class="card animate__animated animate__fadeInUp" onclick="openDrawer(${p.id})">
-                    <div class="card-img" style="background-image: url('${p.img}')">
-                        <div class="card-tag">${p.tag}</div>
-                    </div>
-                    <div class="card-info">
-                        <h3>${p.name}</h3>
-                        <p>${p.desc}</p>
-                    </div>
+                    <div class="card-img" style="background-image: url('${p.img}')"><div class="card-tag">${p.tag}</div></div>
+                    <div class="card-info"><h3>${p.name}</h3><p>${p.desc}</p></div>
                     <div class="card-footer">
-                        <div>
-                            <span class="price-label">A partir de</span>
-                            <span class="price-val">R$ ${p.variations[0].p.toFixed(2).replace('.', ',')}</span>
-                        </div>
+                        <div><span class="price-label">A partir de</span><span class="price-val">R$ ${p.variations[0].p.toFixed(2).replace('.', ',')}</span></div>
                         <div class="btn-view">VER OPÇÕES</div>
                     </div>
                 </div>
@@ -341,10 +345,7 @@
             const list = document.getElementById('variations-list');
             list.innerHTML = p.variations.map(v => `
                 <div class="variation-card">
-                    <div>
-                        <div style="font-weight: 800; font-size: 1.1rem;">${v.n}</div>
-                        <div style="color: var(--primary); font-weight: 950;">R$ ${v.p.toFixed(2).replace('.', ',')}</div>
-                    </div>
+                    <div><div style="font-weight: 800; font-size: 1.1rem;">${v.n}</div><div style="color: var(--primary); font-weight: 950;">R$ ${v.p.toFixed(2).replace('.', ',')}</div></div>
                     <button class="btn-cart-add" onclick="addToCart('${v.n}', ${v.p})">ADICIONAR</button>
                 </div>
             `).join('');
@@ -356,13 +357,15 @@
             cart.push({ name, price });
             saveCart();
             updateCartUI();
-            showToast('Item adicionado ao carrinho! 🛒');
+            showToast('Item adicionado! 🛒');
             closeAll();
         }
 
         function updateCartUI() {
             const list = document.getElementById('cart-items-list');
             const total = document.getElementById('cart-total-val');
+            const badge = document.getElementById('cart-count-badge');
+            badge.innerText = cart.length;
             if (cart.length === 0) {
                 list.innerHTML = '<p style="color: #444; text-align: center; margin-top: 20px;">Vazio...</p>';
                 total.innerText = 'R$ 0,00';
@@ -373,10 +376,7 @@
                 sum += item.price;
                 return `
                     <div class="cart-item">
-                        <div style="flex: 1">
-                            <div style="font-weight: 700; font-size: 0.9rem;">${item.name}</div>
-                            <div style="color: var(--primary); font-weight: 800;">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
-                        </div>
+                        <div style="flex: 1"><div style="font-weight: 700; font-size: 0.9rem;">${item.name}</div><div style="color: var(--primary); font-weight: 800;">R$ ${item.price.toFixed(2).replace('.', ',')}</div></div>
                         <i class="fas fa-trash-alt" onclick="removeItem(${idx})" style="color: #333; cursor: pointer;"></i>
                     </div>
                 `;
@@ -384,36 +384,22 @@
             total.innerText = `R$ ${sum.toFixed(2).replace('.', ',')}`;
         }
 
-        function removeItem(idx) {
-            cart.splice(idx, 1);
-            saveCart();
-            updateCartUI();
-        }
-
+        function removeItem(idx) { cart.splice(idx, 1); saveCart(); updateCartUI(); }
         function saveCart() { localStorage.setItem('pb_cart', JSON.stringify(cart)); }
 
-        // LOGICA DE LOGIN (VERSÃO ALTERNATIVA SEM ERRO)
         function simulateLogin() {
-            // O botão real do Google está acima, mas como o GitHub Pages às vezes bloqueia,
-            // esta função serve como um fallback de alta qualidade.
-            user = {
-                name: "Luca Pro",
-                photo: "https://ui-avatars.com/api/?name=Luca&background=ff0000&color=fff"
-            };
+            user = { name: "Luca Pro", photo: "https://ui-avatars.com/api/?name=Luca&background=ff0000&color=fff" };
             localStorage.setItem('pb_user', JSON.stringify(user));
             updateAuthUI();
-            showToast('Login realizado com sucesso! 🕷️');
+            showToast('Login realizado! 🕷️');
         }
 
         function updateAuthUI() {
             const btn = document.getElementById('login-btn');
             const display = document.getElementById('user-display');
             const logoutBtn = document.getElementById('logout-btn');
-            const gBtn = document.getElementById('google-btn-real');
-
             if (user) {
                 btn.style.display = 'none';
-                if(gBtn) gBtn.style.display = 'none';
                 display.style.display = 'flex';
                 document.getElementById('user-photo').src = user.photo;
                 document.getElementById('user-name').innerText = user.name;
@@ -425,29 +411,16 @@
             }
         }
 
-        function logout() {
-            user = null;
-            localStorage.removeItem('pb_user');
-            if(window.google) google.accounts.id.disableAutoSelect();
-            updateAuthUI();
-            closeAll();
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-
+        function logout() { user = null; localStorage.removeItem('pb_user'); updateAuthUI(); closeAll(); }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
         function closeAll() {
             document.getElementById('drawer').classList.remove('active');
             document.getElementById('sidebar').classList.remove('active');
             document.getElementById('overlay').classList.remove('active');
         }
-
         function showToast(msg) {
             const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.style.display = 'block';
+            t.innerText = msg; t.style.display = 'block';
             setTimeout(() => t.style.display = 'none', 3000);
         }
 
@@ -456,15 +429,11 @@
             let msg = "*PEDIDO PIERBLOX STORE*\n\n";
             if (user) msg += `*Cliente:* ${user.name}\n\n`;
             let sum = 0;
-            cart.forEach(i => {
-                msg += `• ${i.name} (R$ ${i.price.toFixed(2).replace('.', ',')})\n`;
-                sum += i.price;
-            });
+            cart.forEach(i => { msg += `• ${i.name} (R$ ${i.price.toFixed(2).replace('.', ',')})\n`; sum += i.price; });
             msg += `\n*TOTAL: R$ ${sum.toFixed(2).replace('.', ',')}*`;
             window.open(`https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        // Init
         renderProducts();
         updateCartUI();
         updateAuthUI();
