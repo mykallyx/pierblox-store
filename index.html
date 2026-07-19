@@ -208,12 +208,12 @@
             <button class="google-auth-btn" id="login-btn" onclick="document.querySelector('#google-btn-real iframe').contentWindow.document.querySelector('[role=button]').click()">
                 <i class="fab fa-google"></i> Login
             </button>
-            <div class="logged-user" id="user-display" onclick="toggleSidebar()">
+            <div class="logged-user" id="user-display" onclick="logout()">
                 <img src="" id="user-photo">
                 <span id="user-name">Luca</span>
             </div>
             
-            <button class="btn-dots" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            <button class="btn-dots" onclick="toggleSidebar()"><i class="fas fa-shopping-cart"></i></button>
         </div>
     </nav>
 
@@ -312,6 +312,7 @@
             updateAuthUI();
             showToast(`Bem-vindo, ${user.name}! 🕷️`);
         }
+        function renderProducts() {
             const grid = document.getElementById('products-grid');
             grid.innerHTML = products.map(p => `
                 <div class="card animate__animated animate__fadeInUp" onclick="openDrawer(${p.id})">
@@ -357,7 +358,6 @@
             updateCartUI();
             showToast('Item adicionado ao carrinho! 🛒');
             closeAll();
-            toggleSidebar();
         }
 
         function updateCartUI() {
