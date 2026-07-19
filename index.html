@@ -195,6 +195,11 @@
             text-align: center;
         }
     </style>
+
+<style>
+    .pix-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); z-index: 100000; display: flex; align-items: center; justify-content: center; }
+    .pix-card { background: rgba(10, 10, 10, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 40px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.7); }
+</style>
 </head>
 <body>
 
@@ -543,72 +548,37 @@
             setTimeout(() => t.style.display = 'none', 3000);
         }
 
-                                async function checkout() {
+                                
+        async function checkout() {
             if(!cart.length) return showAlert('AVISO', 'Carrinho vazio!');
             const total = cart.reduce((s, x) => s + (x.price || 0), 0).toFixed(2);
             showToast('Gerando Pix...');
             try {
-                // Usando a URL completa para garantir que o servidor responda
                 const response = await fetch('https://pierblox-store.vercel.app/api/pix.py', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: total, description: 'Pedido PierBlox' })
+                    body: JSON.stringify({ amount: total })
                 });
-                
-                const data = await response.json();
-                
-                if (data.point_of_interaction) {
-                    const qrCode = data.point_of_interaction.transaction_data.qr_code_base64;
-                    const paymentId = data.id;
-                    
-                    const modal = document.createElement('div');
-                    modal.id = 'pix-modal';
-                    // Estilo de luxo com blur
-                    modal.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);padding:20px;";
-                    
-                    modal.innerHTML = `
-                        <div style="background:rgba(20,20,20,0.8); padding:40px; border-radius:30px; border:1px solid rgba(255,0,0,0.5); max-width:400px; width:100%; text-align:center; box-shadow: 0 0 30px rgba(255,0,0,0.2);">
-                            <h2 style="color:#ff0000; margin-bottom:10px; font-size:1.5rem; letter-spacing:1px;">PIX GERADO</h2>
-                            <p style="font-size:0.8rem; margin-bottom:25px; color:#aaa;">O sistema aprova seu pedido automaticamente após o pagamento.</p>
-                            
-                            <div style="background:#fff; padding:15px; border-radius:20px; display:inline-block; margin-bottom:25px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
-                                <img src="data:image/png;base64,${qrCode}" style="width:200px; height:200px; display:block;">
-                            </div>
-                            
-                            <p id="pix-status" style="font-weight:bold; color:#fff; font-size:1rem; margin-bottom:5px;">AGUARDANDO PAGAMENTO</p>
-                            <div style="width:50px; height:2px; background:#ff0000; margin: 10px auto 25px; border-radius:2px; animation: pulse 1.5s infinite;"></div>
-                            
-                            <button onclick="document.getElementById('pix-modal').remove()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:12px 25px; border-radius:15px; cursor:pointer; font-size:0.9rem; transition:0.3s; width:100%;">CANCELAR</button>
-                        </div>
-                        <style>
-                            @keyframes pulse { 0% { opacity: 0.3; width: 20px; } 50% { opacity: 1; width: 60px; } 100% { opacity: 0.3; width: 20px; } }
-                        </style>
-                    `;
-                    document.body.appendChild(modal);
-                    
-                    const interval = setInterval(async () => {
-                        try {
-                            const check = await fetch('https://pierblox-store.vercel.app/api/pix.py', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ payment_id: paymentId })
-                            });
-                            const statusData = await check.json();
-                            if (statusData.status === 'approved') {
-                                clearInterval(interval);
-                                document.getElementById('pix-status').innerHTML = "✅ PAGAMENTO APROVADO!";
-                                document.getElementById('pix-status').style.color = "#00ff00";
-                                setTimeout(() => location.reload(), 2500);
-                            }
-                        } catch(e) {}
-                    }, 5000);
-                } else {
-                    showAlert('ERRO', 'Não foi possível gerar o QR Code. Tente novamente.');
-                }
-            } catch (e) {
-                showAlert('ERRO', 'Erro de conexão. Verifique sua internet.');
-            }
+                const d = await response.json();
+                const qr = d.point_of_interaction.transaction_data.qr_code_base64;
+                const overlay = document.createElement('div');
+                overlay.className = 'pix-overlay';
+                overlay.id = 'pix-modal';
+                overlay.innerHTML = `<div class="pix-card"><h2 style="color:#ff3333; margin:0; font-size:1.5rem;">PIX GERADO</h2><div style="background:#fff; padding:15px; border-radius:25px; display:inline-block; margin:25px 0;"><img src="data:image/png;base64,${qr}" style="width:200px; height:200px; display:block;"></div><p id="st-txt" style="color:#fff; font-weight:bold; font-size:1.1rem;">AGUARDANDO PAGAMENTO...</p><button onclick="document.getElementById('pix-modal').remove()" style="background:rgba(255,255,255,0.05); border:none; color:#777; margin-top:20px; cursor:pointer; padding:10px 20px; border-radius:15px; width:100%;">CANCELAR</button></div>`;
+                document.body.appendChild(overlay);
+                const itv = setInterval(async () => {
+                    const ck = await fetch('https://pierblox-store.vercel.app/api/pix.py', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ payment_id: d.id })});
+                    const r = await ck.json();
+                    if(r.status === 'approved'){ 
+                        clearInterval(itv); 
+                        document.getElementById('st-txt').innerText="✅ PAGO COM SUCESSO!";
+                        document.getElementById('st-txt').style.color="#00ff00";
+                        setTimeout(()=>location.reload(), 2000); 
+                    }
+                }, 4000);
+            } catch(e) { showAlert('ERRO', 'Tente novamente em instantes'); }
         }
+
 
         renderProducts(); updateCartUI(); updateAuthUI();
     </script>
