@@ -231,12 +231,19 @@ body.cart-open { overflow: hidden; }
       </button>
     </div>
     <div class="h-full flex flex-col">
-      <div class="my-auto text-center flex flex-col items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-purple-500 mb-3"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-        <p class="text-lg font-semibold">Seu carrinho está vazio.</p>
-        <p class="text-sm text-gray-400">Assim que você escolher um produto, ele aparecerá aqui!</p>
-      </div>
+    <div class="h-full flex flex-col overflow-y-auto" id="new-cart-items-list">
+      <!-- Itens serão injetados aqui -->
     </div>
+    <div class="mt-auto border-t border-white/10 pt-4">
+      <div class="flex justify-between mb-4">
+        <span class="text-gray-400">Total</span>
+        <span class="font-bold text-white" id="new-cart-total">R$ 0,00</span>
+      </div>
+      <button onclick="checkout()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition-colors">
+        FINALIZAR NO WHATSAPP
+      </button>
+    </div>
+</div></div>
 
     <div id="toast">Prontinho!</div>
     <div class="overlay" id="overlay" onclick="closeAll()"></div>
@@ -282,7 +289,7 @@ body.cart-open { overflow: hidden; }
             <div class="logged-user" id="user-display" onclick="openProfile()">
                 <img src="" id="user-photo"> <span id="user-name"></span>
             </div>
-            <button class="btn-dots" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            <button class="btn-dots" id="open-cart-btn"><i class="fas fa-bars"></i></button>
         </div>
     </nav>
 
@@ -300,7 +307,7 @@ body.cart-open { overflow: hidden; }
 
     <main class="products-container" id="products-grid"></main>
 
-    <div class="floating-cart" onclick="toggleSidebar()">
+    <div class="floating-cart" id="open-cart-btn">
         <i class="fas fa-shopping-cart"></i>
         <div class="cart-count" id="cart-count">0</div>
     </div>
@@ -321,7 +328,7 @@ body.cart-open { overflow: hidden; }
         </div>
         
         <div id="menu-section" style="display: flex; flex-direction: column;">
-            <div class="sidebar-menu-item" onclick="openCartFromMenu()">
+            <div class="sidebar-menu-item" onclick="openNewCart()">
                 <i class="fas fa-shopping-cart"></i>
                 <span>Meu Carrinho</span>
             </div>
@@ -521,15 +528,53 @@ body.cart-open { overflow: hidden; }
             updateCartUI(); showToast('Adicionado ao carrinho!'); closeAll();
         }
 
+        
         function updateCartUI() {
-            document.getElementById('cart-count').innerText = cart.length;
-            const list = document.getElementById('cart-items-list');
+            // UI Original
+            const cartCount = document.getElementById('cart-count');
+            if(cartCount) cartCount.innerText = cart.length;
+            
+            // Novo Drawer (Sopier)
+            const newList = document.getElementById('new-cart-items-list');
+            const newTotal = document.getElementById('new-cart-total');
+            
             let sum = 0;
-            if(cart.length === 0) list.innerHTML = '<p style="text-align:center; padding:50px; opacity:0.3;">Seu carrinho está vazio.</p>';
-            else {
-                list.innerHTML = cart.map((item, i) => {
-                    sum += item.p;
-                    return `<div style="display:flex; justify-content:space-between; margin-bottom:15px;"><div><b>${item.n}</b><br><small>R$ ${item.p.toFixed(2)}</small></div><i class="fas fa-trash" onclick="removeItem(${i})" style="color:#ff4444; cursor:pointer;"></i></div>`;
+            if(cart.length === 0) {
+                if(newList) newList.innerHTML = `
+                    <div class="my-auto text-center flex flex-col items-center p-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-purple-500 mb-3"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        <p class="text-lg font-semibold text-white">Seu carrinho está vazio.</p>
+                        <p class="text-sm text-gray-400">Assim que você escolher um produto, ele aparecerá aqui!</p>
+                    </div>`;
+            } else {
+                if(newList) {
+                    newList.innerHTML = cart.map((item, i) => {
+                        sum += item.p;
+                        return `
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl mb-3 border border-white/5">
+                            <div>
+                                <p class="font-bold text-white">${item.n}</p>
+                                <p class="text-purple-400 font-black text-sm">R$ ${item.p.toFixed(2).replace('.', ',')}</p>
+                            </div>
+                            <button onclick="removeItem(${i})" class="text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-colors">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>`;
+                    }).join('');
+                }
+            }
+            if(newTotal) newTotal.innerText = `R$ ${sum.toFixed(2).replace('.', ',')}`;
+        }
+        
+        function openNewCart() {
+            closeAll();
+            const drawer = document.getElementById('cart-drawer');
+            drawer.classList.remove('hidden');
+            drawer.setAttribute('data-state', 'open');
+            document.body.classList.add('cart-open');
+            updateCartUI();
+        }
+</b><br><small>R$ ${item.p.toFixed(2)}</small></div><i class="fas fa-trash" onclick="removeItem(${i})" style="color:#ff4444; cursor:pointer;"></i></div>`;
                 }).join('');
             }
             document.getElementById('cart-total-val').innerText = `R$ ${sum.toFixed(2).replace('.', ',')}`;
@@ -598,10 +643,11 @@ body.cart-open { overflow: hidden; }
         renderProducts(); updateCartUI(); updateAuthUI();
     </script>
 
+
 <script>
     // Controle do Novo Checkout (Sopier)
     const cartDrawer = document.getElementById('cart-drawer');
-    const openCartBtn = document.getElementById('open-cart-btn') || document.querySelector('.cart-icon'); 
+    const openCartBtn = document.getElementById('open-cart-btn'); 
     const closeCartBtn = document.getElementById('close-cart-btn');
 
     if (openCartBtn) {
@@ -610,6 +656,7 @@ body.cart-open { overflow: hidden; }
             cartDrawer.classList.remove('hidden');
             cartDrawer.setAttribute('data-state', 'open');
             document.body.classList.add('cart-open');
+            updateCartUI();
         });
     }
 
@@ -620,10 +667,19 @@ body.cart-open { overflow: hidden; }
             setTimeout(() => cartDrawer.classList.add('hidden'), 400);
         });
     }
+    
+    // Fechar ao clicar fora (no overlay do drawer)
+    cartDrawer.addEventListener('click', (e) => {
+        if(e.target === cartDrawer) {
+            closeCartBtn.click();
+        }
+    });
 </script>
+
 
 </body>
 </html>
+
 
 
 
