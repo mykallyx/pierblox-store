@@ -207,8 +207,36 @@
             pointer-events: none !important;
         }
     </style>
-    </head>
+    <script src="https://cdn.tailwindcss.com"></script>
+<style>
+@keyframes fade-in  { from { background: rgba(0,0,0,0); }
+@keyframes fade-out { from { background: rgba(0,0,0,0.8); }
+@keyframes slide-in { from { transform: translateX(500px); }
+@keyframes slide-out { from { transform: translateX(0); }
+#cart-drawer[data-state="open"]       { animation: fade-in  0.4s forwards; }
+#cart-drawer[data-state="closed"]     { animation: fade-out 0.4s forwards; }
+#cart-drawer[data-state="open"]  > div { animation: slide-in  0.4s forwards; }
+#cart-drawer[data-state="closed"] > div { animation: slide-out 0.4s forwards; }
+body.cart-open { overflow: hidden; }
+</style>
+</head>
 <body>
+<!-- CART DRAWER -->
+<div id="cart-drawer" class="w-screen h-dvh flex items-center justify-end z-50 fixed top-0 left-0 hidden" data-state="closed">
+  <div class="h-full w-full lg:w-[450px] p-5 flex flex-col bg-[rgb(9,9,11)] border-l border-white/10">
+    <div class="flex items-center justify-between mb-4">
+      <h4 class="text-lg font-semibold">Carrinho</h4>
+      <button id="close-cart-btn" class="text-gray-400 hover:text-white transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="h-full flex flex-col">
+      <div class="my-auto text-center flex flex-col items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-purple-500 mb-3"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <p class="text-lg font-semibold">Seu carrinho está vazio.</p>
+        <p class="text-sm text-gray-400">Assim que você escolher um produto, ele aparecerá aqui!</p>
+      </div>
+    </div>
 
     <div id="toast">Prontinho!</div>
     <div class="overlay" id="overlay" onclick="closeAll()"></div>
@@ -569,7 +597,33 @@
 
         renderProducts(); updateCartUI(); updateAuthUI();
     </script>
+
+<script>
+    // Controle do Novo Checkout (Sopier)
+    const cartDrawer = document.getElementById('cart-drawer');
+    const openCartBtn = document.getElementById('open-cart-btn') || document.querySelector('.cart-icon'); 
+    const closeCartBtn = document.getElementById('close-cart-btn');
+
+    if (openCartBtn) {
+        openCartBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            cartDrawer.classList.remove('hidden');
+            cartDrawer.setAttribute('data-state', 'open');
+            document.body.classList.add('cart-open');
+        });
+    }
+
+    if (closeCartBtn) {
+        closeCartBtn.addEventListener('click', () => {
+            cartDrawer.setAttribute('data-state', 'closed');
+            document.body.classList.remove('cart-open');
+            setTimeout(() => cartDrawer.classList.add('hidden'), 400);
+        });
+    }
+</script>
+
 </body>
 </html>
+
 
 
