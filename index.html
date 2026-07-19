@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PierBlox Store - Premium Gaming Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Poppins:wght@300;400;600;950&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root {
+            --primary: #ff0000;
+            --primary-glow: rgba(255, 0, 0, 0.5);
+            --bg: #050505;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --glass: rgba(255, 255, 255, 0.02);
+            --text-main: #ffffff;
+            --text-dim: #b0b0b0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% -20%, #1a0505 0%, transparent 50%),
+                linear-gradient(to right, #0d0d0d 1px, transparent 1px),
+                linear-gradient(to bottom, #0d0d0d 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+        }
+
+        .navbar {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .auth-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            overflow: hidden;
+            display: none;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .user-profile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .login-btn {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .login-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--primary-glow); }
+
+        .btn-menu {
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .hero {
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .main-title {
+            font-size: 4.5rem;
+            font-weight: 950;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: -2px;
+            margin-bottom: 5px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 30%, #ff0000 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+        }
+
+        .verified-spider {
+            width: 50px;
+            height: 50px;
+            vertical-align: middle;
+            margin-left: 10px;
+            filter: drop-shadow(0 0 10px #ff0000);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); filter: drop-shadow(0 0 5px #ff0000); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 20px #ff0000); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 5px #ff0000); }
+        }
+
+        .slogan {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dim);
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .store-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px rgba(255, 0, 0, 0.1);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 140px;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #222;
+        }
+
+        .product-info { padding: 15px; }
+        .product-name { font-weight: 800; font-size: 1.1rem; margin-bottom: 5px; }
+        .product-price { color: var(--primary); font-weight: 900; font-size: 1.2rem; }
+
+        /* Sidebar/Drawer */
+        .drawer {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            height: 85%;
+            background: #080808;
+            border-top: 2px solid var(--primary);
+            border-radius: 30px 30px 0 0;
+            z-index: 1000;
+            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 30px 20px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
+        }
+
+        .drawer.active { bottom: 0; }
+
+        .drawer-handle {
+            width: 40px;
+            height: 5px;
+            background: #333;
+            border-radius: 10px;
+            margin: -15px auto 20px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            z-index: 999;
+        }
+
+        .overlay.active { display: block; }
+
+        .variation-list { display: flex; flex-direction: column; gap: 12px; margin: 25px 0; }
+        .variation-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--card-border);
+            padding: 18px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .variation-item:hover { border-color: var(--primary); background: rgba(255,0,0,0.05); }
+
+        .btn-add-cart {
+            background: var(--primary);
+            color: white;
+            width: 100%;
+            padding: 18px;
+            border-radius: 15px;
+            border: none;
+            font-weight: 900;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255,0,0,0.2);
+        }
+
+        /* Sidebar Right (Menu/Cart) */
+        .sidebar-right {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 320px;
+            height: 100%;
+            background: #080808;
+            border-left: 1px solid var(--card-border);
+            z-index: 1100;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 40px 25px;
+        }
+
+        .sidebar-right.active { right: 0; }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px;
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .menu-item:hover { background: rgba(255,255,255,0.05); color: var(--primary); }
+
+        .cart-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            position: absolute;
+            top: -5px;
+            right: -10px;
+        }
+
+        #toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 800;
+            z-index: 2000;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast">Item adicionado!</div>
+
+    <nav class="navbar">
+        <div class="logo" style="font-weight: 900; font-size: 1.4rem;">PIER<span style="color: var(--primary);">BLOX</span></div>
+        <div class="nav-right">
+            <div id="g_id_onload"
+                 data-client_id="855928623788-p8qf2vck4sk7f8d689bshqis0n8v5e1b.apps.googleusercontent.com"
+                 data-callback="handleCredentialResponse"
+                 data-auto_prompt="false">
+            </div>
+            <div class="auth-container">
+                <button class="login-btn" id="login-btn" onclick="document.querySelector('[role=button]').click()">
+                    <i class="fab fa-google"></i> Entrar
+                </button>
+                <div class="user-profile" id="user-profile" onclick="toggleMenu()">
+                    <img src="" id="user-img" alt="User">
+                </div>
+                <div class="g_id_signin" data-type="icon" data-shape="circle" data-theme="outline" data-text="signin_with" data-size="large" style="display:none"></div>
+            </div>
+            <button class="btn-menu" onclick="toggleMenu()"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+    </nav>
+
+    <div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+    <section class="hero">
+        <h1 class="main-title animate__animated animate__fadeInDown">
+            <span class="gradient-text">PierBlox</span>
+            <img src="https://share.zapia.com/tjbr0xfylxy8jku8ak35jx" class="verified-spider" alt="Verified">
+        </h1>
+        <p class="slogan">sua lojinha favorita!</p>
+
+        <div style="max-width: 600px; margin: 0 auto 50px; padding: 25px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; backdrop-filter: blur(15px); text-align: center;">
+            <p style="color: #b0b0b0; font-size: 1rem; line-height: 1.6; font-family: 'Poppins', sans-serif;">
+                🌟 <span style="color: #fff; font-weight: 700;">PierBlox Store</span> é uma loja confiável, focada em oferecer a melhor experiência para seus clientes. Entregas rápidas e total transparência. Sua satisfação é nossa prioridade! ❤️
+            </p>
+        </div>
+
+        <div class="store-grid" id="product-grid">
+            <!-- Gerado via JS -->
+        </div>
+    </section>
+
+    <!-- Drawer de Produto -->
+    <div class="drawer" id="product-drawer">
+        <div class="drawer-handle"></div>
+        <h2 id="drawer-title" style="font-size: 1.8rem; font-weight: 950; margin-bottom: 10px;">Nome</h2>
+        <p id="drawer-desc" style="color: var(--text-dim); margin-bottom: 20px;">Descrição</p>
+        
+        <div class="variation-list" id="variation-list">
+            <!-- Gerado via JS -->
+        </div>
+    </div>
+
+    <!-- Sidebar Menu/User -->
+    <div class="sidebar-right" id="menu-sidebar">
+        <div id="user-info-menu" style="margin-bottom: 30px; display: none;">
+            <p style="color: var(--text-dim); font-size: 0.8rem;">Logado como:</p>
+            <h3 id="user-name-display" style="font-weight: 900; font-size: 1.2rem;">Nome do Usuário</h3>
+            <button onclick="logout()" style="background: none; border: none; color: var(--primary); font-weight: 700; margin-top: 5px; cursor: pointer;">Sair da conta</button>
+        </div>
+        
+        <a href="#" class="menu-item" onclick="toggleCart(); return false;">
+            <i class="fas fa-shopping-cart"></i> Meu Carrinho <span id="cart-count-badge" class="cart-badge">0</span>
+        </a>
+        <a href="https://site.zapia.com/yr7l84c7" target="_blank" class="menu-item"><i class="fas fa-users"></i> Comunidade</a>
+        <a href="#" class="menu-item"><i class="fas fa-star"></i> Avaliações</a>
+        <a href="#" class="menu-item"><i class="fas fa-headset"></i> Suporte</a>
+    </div>
+
+    <!-- Sidebar Carrinho -->
+    <div class="sidebar-right" id="cart-sidebar">
+        <h2 style="font-weight: 950; font-size: 2rem; margin-bottom: 30px;">CARRINHO</h2>
+        <div id="cart-items" style="max-height: 60vh; overflow-y: auto;">
+            <!-- Itens -->
+        </div>
+        <div style="position: absolute; bottom: 40px; left: 25px; right: 25px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 900; font-size: 1.2rem;">
+                <span>TOTAL:</span>
+                <span id="cart-total" style="color: var(--primary);">R$ 0,00</span>
+            </div>
+            <button onclick="checkout()" class="btn-add-cart">FINALIZAR PEDIDO</button>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            {
+                id: 1,
+                name: "Robux",
+                desc: "Entrega imediata via Gamepass ou Group.",
+                icon: "fas fa-gem",
+                variations: [
+                    { name: "400 Robux", price: 19.90 },
+                    { name: "800 Robux", price: 35.00 },
+                    { name: "1700 Robux", price: 70.00 }
+                ]
+            },
+            {
+                id: 2,
+                name: "Frutas Blox Fruits",
+                desc: "Frutas físicas ou permanentes no estoque.",
+                icon: "fas fa-apple-alt",
+                variations: [
+                    { name: "Leopard", price: 25.00 },
+                    { name: "Dragon", price: 20.00 },
+                    { name: "Spirit", price: 15.00 }
+                ]
+            }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('user')) || null;
+
+        function handleCredentialResponse(response) {
+            const payload = JSON.parse(atob(response.credential.split('.')[1]));
+            currentUser = {
+                name: payload.name,
+                email: payload.email,
+                picture: payload.picture
+            };
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            updateAuthUI();
+            showToast(`Bem-vindo, ${currentUser.name}!`);
+        }
+
+        function updateAuthUI() {
+            const loginBtn = document.getElementById('login-btn');
+            const userProfile = document.getElementById('user-profile');
+            const userImg = document.getElementById('user-img');
+            const userInfoMenu = document.getElementById('user-info-menu');
+            const userNameDisplay = document.getElementById('user-name-display');
+
+            if (currentUser) {
+                loginBtn.style.display = 'none';
+                userProfile.style.display = 'block';
+                userImg.src = currentUser.picture;
+                userInfoMenu.style.display = 'block';
+                userNameDisplay.innerText = currentUser.name;
+            } else {
+                loginBtn.style.display = 'flex';
+                userProfile.style.display = 'none';
+                userInfoMenu.style.display = 'none';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            currentUser = null;
+            updateAuthUI();
+            closeAll();
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = products.map(p => `
+                <div class="product-card animate__animated animate__fadeIn" onclick="openDrawer(${p.id})">
+                    <div class="product-img"><i class="${p.icon}"></i></div>
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">A partir de R$ ${p.variations[0].price.toFixed(2).replace('.', ',')}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openDrawer(id) {
+            const p = products.find(x => x.id === id);
+            document.getElementById('drawer-title').innerText = p.name;
+            document.getElementById('drawer-desc').innerText = p.desc;
+            const vList = document.getElementById('variation-list');
+            vList.innerHTML = p.variations.map(v => `
+                <div class="variation-item" onclick="addToCart('${v.name}', ${v.price})">
+                    <span>${v.name}</span>
+                    <strong style="color: var(--primary)">R$ ${v.price.toFixed(2).replace('.', ',')}</strong>
+                </div>
+            `).join('');
+            document.getElementById('product-drawer').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartUI();
+            showToast('Adicionado ao carrinho!');
+            closeAll();
+            toggleCart();
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('cart-items');
+            const total = document.getElementById('cart-total');
+            const badge = document.getElementById('cart-count-badge');
+            
+            badge.innerText = cart.length;
+            
+            if (cart.length === 0) {
+                list.innerHTML = '<p style="color: #444; text-align: center; margin-top: 50px;">Seu carrinho está vazio.</p>';
+                total.innerText = 'R$ 0,00';
+                return;
+            }
+
+            let sum = 0;
+            list.innerHTML = cart.map((item, index) => {
+                sum += item.price;
+                return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 10px; margin-bottom: 10px;">
+                        <div>
+                            <div style="font-weight: 700;">${item.name}</div>
+                            <div style="color: var(--primary); font-weight: 800;">R$ ${item.price.toFixed(2).replace('.', ',')}</div>
+                        </div>
+                        <i class="fas fa-trash" onclick="removeItem(${index})" style="color: #333; cursor: pointer;"></i>
+                    </div>
+                `;
+            }).join('');
+            total.innerText = `R$ ${sum.toFixed(2).replace('.', ',')}`;
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function toggleMenu() {
+            document.getElementById('menu-sidebar').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function toggleCart() {
+            document.getElementById('cart-sidebar').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function closeAll() {
+            document.getElementById('product-drawer').classList.remove('active');
+            document.getElementById('menu-sidebar').classList.remove('active');
+            document.getElementById('cart-sidebar').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+
+        function checkout() {
+            if (cart.length === 0) return alert('Seu carrinho está vazio!');
+            let msg = "*NOVO PEDIDO - PIERBLOX*\n\n";
+            if (currentUser) msg += `*Cliente:* ${currentUser.name}\n*Email:* ${currentUser.email}\n\n`;
+            let sum = 0;
+            cart.forEach(item => {
+                msg += `• ${item.name} - R$ ${item.price.toFixed(2).replace('.', ',')}\n`;
+                sum += item.price;
+            });
+            msg += `\n*TOTAL: R$ ${sum.toFixed(2).replace('.', ',')}*`;
+            window.open(`https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // Init
+        updateAuthUI();
+        renderProducts();
+        updateCartUI();
+    </script>
+</body>
+</html>
