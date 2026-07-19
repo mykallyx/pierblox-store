@@ -195,7 +195,19 @@
             text-align: center;
         }
     </style>
-</head>
+
+    <style>
+        #vercel-live-feedback, 
+        .vercel-toolbar,
+        [id^="vercel-live-feedback"],
+        vercel-live-feedback { 
+            display: none !important; 
+            visibility: hidden !important; 
+            opacity: 0 !important; 
+            pointer-events: none !important;
+        }
+    </style>
+    </head>
 <body>
 
     <div id="toast">Prontinho!</div>
@@ -559,4 +571,5 @@
     </script>
 </body>
 </html>
+
 
