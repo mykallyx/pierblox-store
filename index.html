@@ -339,6 +339,7 @@
         
         // Carrega produtos do localStorage se existirem, senão usa o padrão
         let products = JSON.parse(localStorage.getItem('pierblox_products')) || [
+        { id: 999, n: "PRODUTO TESTE", p: 0.10, i: "https://via.placeholder.com/150", c: "TESTE", d: "Produto para teste de Pix automático (R$ 0,10)" },
             {
                 id: 1,
                 name: 'ROBUX BARATO',
@@ -611,6 +612,7 @@
     </script>
 </body>
 </html>
+
 
 
 
