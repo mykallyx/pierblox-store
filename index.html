@@ -1,1 +1,41 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>PAINEL PIERBLOX</title><style>body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }.box { border: 2px solid red; padding: 20px; border-radius: 10px; margin-bottom: 15px; background: #111; }input { width: 100%; padding: 10px; margin: 5px 0; background: #222; color: #fff; border: 1px solid #444; border-radius: 5px; box-sizing: border-box; }button { width: 100%; padding: 15px; background: red; color: #fff; border: none; font-weight: bold; border-radius: 5px; cursor: pointer; }.preview { width: 100px; height: 100px; object-fit: cover; margin-top: 10px; border: 1px solid red; }#painel { display: none; }</style></head><body><div id='login'><h2>PAINEL DE CONTROLE</h2><input type='password' id='pass' placeholder='Senha...'><button onclick='entrar()'>ENTRAR</button></div><div id='painel'><h1>MEUS PRODUTOS</h1><div id='lista'></div><button onclick='publicar()' style='background: green; margin-top: 20px;'>GERAR CÓDIGO DE PUBLICAÇÃO</button></div><script>const SENHA = '2026'; let dados = [{id: 1, nome: 'ROBUX BARATO', preco: 45.00, img: 'https://i.ibb.co/LpYx0Xk/robux.jpg'},{id: 2, nome: 'BLOX FRUITS', preco: 150.00, img: 'https://i.ibb.co/6y4G1vX/frutas.jpg'},{id: 3, nome: 'CONTAS UPADAS', preco: 60.00, img: 'https://i.ibb.co/vXy0LqV/contas.jpg'}]; function entrar() { if(document.getElementById('pass').value === SENHA) { document.getElementById('login').style.display = 'none'; document.getElementById('painel').style.display = 'block'; desenhar(); } else alert('Senha Errada!'); } function desenhar() { let h = ''; for(let i=0; i<dados.length; i++) { h += '<div class="box"><h3>Produto '+(i+1)+'</h3><input type="text" value="'+dados[i].nome+'" onchange="dados['+i+'].nome=this.value"><input type="number" value="'+dados[i].preco+'" onchange="dados['+i+'].preco=parseFloat(this.value)"><input type="file" accept="image/*" onchange="trocar('+i+', this)"><img src="'+dados[i].img+'" id="pre-'+i+'" class="preview"></div>'; } document.getElementById('lista').innerHTML = h; } function trocar(i, input) { const f = input.files[0]; const r = new FileReader(); r.onload = () => { dados[i].img = r.result; document.getElementById('pre-'+i).src = r.result; }; r.readAsDataURL(f); } function publicar() { const c = btoa(JSON.stringify(dados)); prompt('COPIE ESTE CÓDIGO E MANDE PARA A ZAPIA:', c); }</script></body></html>
+<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>PAINEL PIERBLOX</title><style>body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }.box { border: 2px solid red; padding: 20px; border-radius: 10px; margin-bottom: 15px; background: #111; }input { width: 100%; padding: 10px; margin: 5px 0; background: #222; color: #fff; border: 1px solid #444; border-radius: 5px; box-sizing: border-box; }button { width: 100%; padding: 15px; background: red; color: #fff; border: none; font-weight: bold; border-radius: 5px; cursor: pointer; }.preview { width: 100px; height: 100px; object-fit: cover; margin-top: 10px; border: 1px solid red; }#painel { display: none; }</style></head><body><div id='login'><h2>PAINEL DE CONTROLE</h2><input type='password' id='pass' placeholder='Senha...'><button onclick='entrar()'>ENTRAR</button></div><div id='painel'><h1>MEUS PRODUTOS</h1><div id='lista'></div><button onclick='publicar()' style='background: green; margin-top: 20px;'>GERAR CÓDIGO DE PUBLICAÇÃO</button></div><script>const SENHA = '2026'; let dados = [{id: 1, nome: 'ROBUX BARATO', preco: 45.00, img: 'https://i.ibb.co/LpYx0Xk/robux.jpg'},{id: 2, nome: 'BLOX FRUITS', preco: 150.00, img: 'https://i.ibb.co/6y4G1vX/frutas.jpg'},{id: 3, nome: 'CONTAS UPADAS', preco: 60.00, img: 'https://i.ibb.co/vXy0LqV/contas.jpg'}]; function entrar() { if(document.getElementById('pass').value === SENHA) { document.getElementById('login').style.display = 'none'; document.getElementById('painel').style.display = 'block'; desenhar(); } else alert('Senha Errada!'); } function desenhar() { let h = ''; for(let i=0; i<dados.length; i++) { h += '<div class="box"><h3>Produto '+(i+1)+'</h3><input type="text" value="'+dados[i].nome+'" onchange="dados['+i+'].nome=this.value"><input type="number" value="'+dados[i].preco+'" onchange="dados['+i+'].preco=parseFloat(this.value)"><input type="file" accept="image/*" onchange="trocar('+i+', this)"><img src="'+dados[i].img+'" id="pre-'+i+'" class="preview"></div>'; } document.getElementById('lista').innerHTML = h; } function trocar(i, input) { const f = input.files[0]; const r = new FileReader(); r.onload = () => { dados[i].img = r.result; document.getElementById('pre-'+i).src = r.result; }; r.readAsDataURL(f); } function publicar() { const c = btoa(JSON.stringify(dados)); prompt('COPIE ESTE CÓDIGO E MANDE PARA A ZAPIA:', c); }</script></body></htmlconst products = [
+    {
+        "id": 1,
+        "name": "ROBUX BARATO",
+        "desc": "Robux com entrega r\u00e1pida.",
+        "img": "https://i.ibb.co/LpYx0Xk/robux.jpg",
+        "category": "robux",
+        "variations": [
+            {
+                "n": "1.000 Robux",
+                "p": 45.0
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "BLOX FRUITS",
+        "desc": "Frutas raras.",
+        "img": "https://i.ibb.co/6y4G1vX/frutas.jpg",
+        "category": "frutas",
+        "variations": [
+            {
+                "n": "Leopard",
+                "p": 150.0
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "name": "CONTAS UPADAS",
+        "desc": "Contas prontas.",
+        "img": "https://i.ibb.co/vXy0LqV/contas.jpg",
+        "category": "contas",
+        "variations": [
+            {
+                "n": "Level Max",
+                "p": 60.0
+            }
+        ]
+    }
+];!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>PAINEL PIERBLOX</title><style>body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }.box { border: 2px solid red; padding: 20px; border-radius: 10px; margin-bottom: 15px; background: #111; }input { width: 100%; padding: 10px; margin: 5px 0; background: #222; color: #fff; border: 1px solid #444; border-radius: 5px; box-sizing: border-box; }button { width: 100%; padding: 15px; background: red; color: #fff; border: none; font-weight: bold; border-radius: 5px; cursor: pointer; }.preview { width: 100px; height: 100px; object-fit: cover; margin-top: 10px; border: 1px solid red; }#painel { display: none; }</style></head><body><div id='login'><h2>PAINEL DE CONTROLE</h2><input type='password' id='pass' placeholder='Senha...'><button onclick='entrar()'>ENTRAR</button></div><div id='painel'><h1>MEUS PRODUTOS</h1><div id='lista'></div><button onclick='publicar()' style='background: green; margin-top: 20px;'>GERAR CÓDIGO DE PUBLICAÇÃO</button></div><script>const SENHA = '2026'; let dados = [{id: 1, nome: 'ROBUX BARATO', preco: 45.00, img: 'https://i.ibb.co/LpYx0Xk/robux.jpg'},{id: 2, nome: 'BLOX FRUITS', preco: 150.00, img: 'https://i.ibb.co/6y4G1vX/frutas.jpg'},{id: 3, nome: 'CONTAS UPADAS', preco: 60.00, img: 'https://i.ibb.co/vXy0LqV/contas.jpg'}]; function entrar() { if(document.getElementById('pass').value === SENHA) { document.getElementById('login').style.display = 'none'; document.getElementById('painel').style.display = 'block'; desenhar(); } else alert('Senha Errada!'); } function desenhar() { let h = ''; for(let i=0; i<dados.length; i++) { h += '<div class="box"><h3>Produto '+(i+1)+'</h3><input type="text" value="'+dados[i].nome+'" onchange="dados['+i+'].nome=this.value"><input type="number" value="'+dados[i].preco+'" onchange="dados['+i+'].preco=parseFloat(this.value)"><input type="file" accept="image/*" onchange="trocar('+i+', this)"><img src="'+dados[i].img+'" id="pre-'+i+'" class="preview"></div>'; } document.getElementById('lista').innerHTML = h; } function trocar(i, input) { const f = input.files[0]; const r = new FileReader(); r.onload = () => { dados[i].img = r.result; document.getElementById('pre-'+i).src = r.result; }; r.readAsDataURL(f); } function publicar() { const c = btoa(JSON.stringify(dados)); prompt('COPIE ESTE CÓDIGO E MANDE PARA A ZAPIA:', c); }</script></body></html>
